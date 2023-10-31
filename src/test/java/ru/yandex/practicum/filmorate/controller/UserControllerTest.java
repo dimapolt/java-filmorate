@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -10,23 +10,27 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserControllerTest {
     @Test
-    void shouldReturn400WhenWrongEmail() {
+    void shouldThrowExceptionWhenWrongEmail() {
         UserController userController = new UserController();
         User user = new User();
         user.setLogin("user1");
         user.setEmail("user");
 
-        assertEquals(HttpStatus.BAD_REQUEST, userController.createUser(user).getStatusCode());
+        final ValidationException exception = assertThrows(ValidationException.class,
+                () -> userController.createUser(user));
+        assertEquals("Передан некорректный email адрес", exception.getMessage());
     }
 
     @Test
-    void shouldReturn400WhenEmptyLogin() {
+    void shouldThrowExceptionWhenEmptyLogin() {
         UserController userController = new UserController();
         User user = new User();
         user.setLogin(" ");
         user.setEmail("user@ya.ru");
 
-        assertEquals(HttpStatus.BAD_REQUEST, userController.createUser(user).getStatusCode());
+        final ValidationException exception = assertThrows(ValidationException.class,
+                () -> userController.createUser(user));
+        assertEquals("Пустой логин или содержит пробелы", exception.getMessage());
     }
 
     @Test
@@ -41,13 +45,16 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldReturn400WhenBirthdayInFuture() {
+    void shouldThrowExceptionWhenBirthdayInFuture() {
         UserController userController = new UserController();
         User user = new User();
         user.setLogin("user");
         user.setEmail("user@ya.ru");
         user.setBirthday(LocalDate.of(2050,1,1));
 
-        assertEquals(HttpStatus.BAD_REQUEST, userController.createUser(user).getStatusCode());
+        final ValidationException exception = assertThrows(ValidationException.class,
+                () -> userController.createUser(user));
+        assertEquals("Дата рождения из будущего", exception.getMessage());
+
     }
 }
