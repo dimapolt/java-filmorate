@@ -12,7 +12,8 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.time.LocalDate;
 import java.util.*;
 
-@RestController @Slf4j
+@RestController
+@Slf4j
 public class FilmController {
     private static final LocalDate FIRST_FILM = LocalDate.of(1895, 12, 28);
     private Integer id = 1;

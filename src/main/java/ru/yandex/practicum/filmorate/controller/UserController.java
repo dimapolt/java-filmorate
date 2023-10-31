@@ -12,7 +12,8 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.time.LocalDate;
 import java.util.*;
 
-@RestController @Slf4j
+@RestController
+@Slf4j
 public class UserController {
     private final Map<Integer, User> users = new HashMap<>();
     private Integer id = 1;
