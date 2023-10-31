@@ -32,7 +32,8 @@ public class UserController {
                 .filter(u -> u.getLogin().equals(user.getLogin()) || u.getEmail().equals(user.getEmail()))
                 .findFirst();
 
-            if (isValid(user)) {
+            checkValid(user);
+
                 if (userO.isEmpty()) {
                     user.setId(id++);
                     users.put(user.getId(), user);
@@ -42,15 +43,12 @@ public class UserController {
                     log.warn("Пользователь с таким логином и/или email уже есть");
                     return new ResponseEntity<>(user, HttpStatus.OK);
                 }
-            } else {
-                return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
-            }
 
         }
 
     @PutMapping("/users")
     public ResponseEntity<User> updateFilm(@NonNull @RequestBody User user) {
-        if (isValid(user)) {
+        checkValid(user);
             if (users.containsKey(user.getId())) {
                 users.put(user.getId(), user);
                 log.info("Данные пользователя обновлены");
@@ -59,27 +57,21 @@ public class UserController {
                 log.warn("Пользователя с id=" + user.getId() + " не найден");
                 return new ResponseEntity<>(user, HttpStatus.INTERNAL_SERVER_ERROR);
             }
-        } else {
-            return new ResponseEntity<>(user, HttpStatus.BAD_REQUEST);
-        }
     }
 
-    private boolean isValid(@NonNull User user) {
+    private void checkValid(@NonNull User user) {
         if (user.getEmail().isBlank() || !user.getEmail().contains("@")) {
-            log.warn("Передан некорректный email адрес", new ValidationException("Передан некорректный email адрес"));
-            return false;
+            throw new ValidationException("Передан некорректный email адрес");
         } else if (user.getLogin().isBlank() || user.getLogin().contains(" ")) {
-            log.warn("Некорректный логин", new ValidationException("Логин не может быть пустым и содержать пробелы"));
-            return false;
+            throw new ValidationException("Пустой логин или содержит пробелы");
         } else if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.warn("Дата рождения из будущего", new ValidationException("Дата рождения не может быть в будущем"));
-            return false;
+            throw new ValidationException("Дата рождения из будущего");
         }
 
         if (Objects.equals(user.getName(), null) || user.getName().isBlank()) {
             user.setName(user.getLogin());
             log.info("Именем пользователя установлен логин, т.к. имя передано пустым");
         }
-        return true;
+
     }
 }

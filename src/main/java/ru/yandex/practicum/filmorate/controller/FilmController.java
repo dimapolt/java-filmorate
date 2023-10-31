@@ -31,7 +31,8 @@ public class FilmController {
                 .filter(f -> f.getName().equals(film.getName()))
                 .findFirst();
 
-        if (isValid(film)) {
+        checkValid(film);
+
             if (filmO.isEmpty()) {
                 film.setId(id++);
                 films.put(film.getId(), film);
@@ -41,14 +42,12 @@ public class FilmController {
                 log.warn("Фильм с таким названием уже есть");
                 return new ResponseEntity<>(film, HttpStatus.OK);
             }
-        } else {
-            return new ResponseEntity<>(film, HttpStatus.BAD_REQUEST);
-        }
     }
 
     @PutMapping("/films")
     public ResponseEntity<Film> updateFilm(@NonNull @RequestBody Film film) {
-        if (isValid(film)) {
+            checkValid(film);
+
             if (films.containsKey(film.getId())) {
                 films.put(film.getId(), film);
                 log.info("Фильм обновлён");
@@ -57,28 +56,17 @@ public class FilmController {
                 log.warn("Фильма с id=" + film.getId() + " нет");
                 return new ResponseEntity<>(film,HttpStatus.INTERNAL_SERVER_ERROR);
             }
-        } else {
-            return new ResponseEntity<>(film, HttpStatus.BAD_REQUEST);
-        }
     }
 
-    private boolean isValid(@NonNull Film film) {
+    private void checkValid(@NonNull Film film) {
         if (Objects.equals(film.getName(), null) || film.getName().isBlank()) {
-            log.warn("Передан фильм с пустым названием", new ValidationException("Название не может быть пустым!"));
-            return false;
+            throw new ValidationException("Передан фильм с пустым названием");
         } else if (film.getDescription().length() > 200) {
-            log.warn("Передан фильм с описанием, длиной более 200 символов",
-                    new ValidationException("Максимальная длина описания — 200 символов!"));
-            return false;
+            throw new ValidationException("Передан фильм с описанием, длиной более 200 символов");
         } else if (film.getReleaseDate().isBefore(FIRST_FILM)) {
-            log.warn("Передан фильм с датой релиза ранее 28 декабря 1895 года",
-                    new ValidationException("Дата релиза — не может быть раньше 28 декабря 1895 года!"));
-            return false;
+            throw new ValidationException("Передан фильм с датой релиза ранее 28 декабря 1895 года");
         } else if (film.getDuration() < 0) {
-            log.warn("Передан фильм с отрицательной продолжительностью",
-                    new ValidationException("Продолжительность фильма должна быть положительной!"));
-            return false;
+            throw new ValidationException("Передан фильм с отрицательной продолжительностью");
         }
-        return true;
     }
 }
