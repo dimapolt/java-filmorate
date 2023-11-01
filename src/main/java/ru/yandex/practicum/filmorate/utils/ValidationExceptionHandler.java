@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 
-// Обработчик исключений, возникающих при невалидных данных
+/**
+ * Обработчик исключений, возникающих при невалидных данных
+ */
 @ControllerAdvice
 @Slf4j
 public class ValidationExceptionHandler {
