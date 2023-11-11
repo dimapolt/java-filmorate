@@ -5,12 +5,14 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.Email;
 import java.time.LocalDate;
 import java.util.*;
 
 @Data
 public class User {
     private Long id;
+    @Email
     private String email;
     private String login;
     private String name;
