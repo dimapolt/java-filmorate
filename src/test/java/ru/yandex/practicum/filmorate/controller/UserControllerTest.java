@@ -17,12 +17,11 @@ class UserControllerTest {
     UserController userController;
     UserService userService;
 
-
     @BeforeEach
     void init() {
         userStorage = new InMemoryUserStorage();
         userService = new UserService(userStorage);
-        userController = new UserController( userService);
+        userController = new UserController(userService);
     }
 
     @Test
@@ -62,7 +61,7 @@ class UserControllerTest {
         User user = new User();
         user.setLogin("user");
         user.setEmail("user@ya.ru");
-        user.setBirthday(LocalDate.of(2050,1,1));
+        user.setBirthday(LocalDate.of(2050, 1, 1));
 
         final ValidationException exception = assertThrows(ValidationException.class,
                 () -> userController.createUser(user));
