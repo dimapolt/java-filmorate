@@ -1,17 +1,32 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserControllerTest {
+    UserStorage userStorage;
+    UserController userController;
+    UserService userService;
+
+
+    @BeforeEach
+    void init() {
+        userStorage = new InMemoryUserStorage();
+        userService = new UserService(userStorage);
+        userController = new UserController( userService);
+    }
+
     @Test
     void shouldThrowExceptionWhenWrongEmail() {
-        UserController userController = new UserController();
         User user = new User();
         user.setLogin("user1");
         user.setEmail("user");
@@ -23,7 +38,6 @@ class UserControllerTest {
 
     @Test
     void shouldThrowExceptionWhenEmptyLogin() {
-        UserController userController = new UserController();
         User user = new User();
         user.setLogin(" ");
         user.setEmail("user@ya.ru");
@@ -35,7 +49,6 @@ class UserControllerTest {
 
     @Test
     void shouldReturnLoginAsNameWhenEmptyName() {
-        UserController userController = new UserController();
         User user = new User();
         user.setLogin("user");
         user.setEmail("user@ya.ru");
@@ -46,7 +59,6 @@ class UserControllerTest {
 
     @Test
     void shouldThrowExceptionWhenBirthdayInFuture() {
-        UserController userController = new UserController();
         User user = new User();
         user.setLogin("user");
         user.setEmail("user@ya.ru");
