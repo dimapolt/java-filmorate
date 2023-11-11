@@ -7,7 +7,10 @@ import java.util.List;
 
 public interface UserStorage {
     List<User> getAllUsers();
+
     ResponseEntity<User> createUser(User user);
+
     ResponseEntity<User> updateUser(User user);
+
     User getUserById(Long id);
 }

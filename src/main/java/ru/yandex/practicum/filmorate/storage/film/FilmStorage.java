@@ -7,7 +7,10 @@ import java.util.List;
 
 public interface FilmStorage {
     List<Film> getAllFilms();
+
     ResponseEntity<Film> createFilm(Film film);
+
     ResponseEntity<Film> updateFilm(Film film);
+
     Film getFilmById(Long id);
 }
