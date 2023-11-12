@@ -1,17 +1,34 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
+    FilmController filmController;
+    FilmService filmService;
+    FilmStorage filmStorage;
+    UserStorage userStorage;
+
+    @BeforeEach
+    void init() {
+        filmStorage = new InMemoryFilmStorage();
+        filmService = new FilmService(filmStorage, userStorage);
+        filmController = new FilmController(filmService);
+    }
+
     @Test
     void shouldThrowExceptionWhenEmptyFilmCreate() {
-        FilmController filmController = new FilmController();
         Film film = new Film();
         film.setDescription("Description without name");
 
@@ -22,7 +39,6 @@ class FilmControllerTest {
 
     @Test
     void shouldThrowExceptionWhenOver200SymbolsInDescription() {
-        FilmController filmController = new FilmController();
         Film film = new Film();
         film.setName("Cinema");
         film.setDescription("Cinema is an integral part of the social life of people. The movie combines not " +
@@ -36,7 +52,6 @@ class FilmControllerTest {
 
     @Test
     void shouldThrowExceptionWhenDateEarly1895() {
-        FilmController filmController = new FilmController();
         Film film = new Film();
         film.setName("Cinema");
         film.setDescription("Description without name");
@@ -49,7 +64,6 @@ class FilmControllerTest {
 
     @Test
     void shouldThrowExceptionWhenDurationIsNegative() {
-        FilmController filmController = new FilmController();
         Film film = new Film();
         film.setName("Cinema");
         film.setDescription("Description without name");

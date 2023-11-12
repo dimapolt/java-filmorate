@@ -5,14 +5,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 
 /**
- * Обработчик исключений, возникающих при невалидных данных
+ * Обработчик исключений
  */
 @ControllerAdvice
 @Slf4j
-public class ValidationExceptionHandler {
+public class FilmRateExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<ErrorDescription> catchValidationException(ValidationException exception) {
         log.warn(exception.getMessage());
@@ -20,4 +22,14 @@ public class ValidationExceptionHandler {
                 exception.getMessage()),
                 HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler ({UserNotFoundException.class, FilmNotFoundException.class})
+    public ResponseEntity<ErrorDescription> catchNotFoundException(RuntimeException exception) {
+        log.warn(exception.getMessage());
+        return new ResponseEntity<>(new ErrorDescription(HttpStatus.NOT_FOUND.value(),
+                exception.getMessage()),
+                HttpStatus.NOT_FOUND);
+    }
+
+
 }
