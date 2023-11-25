@@ -1,7 +1,7 @@
 # java-filmorate
 Template repository for Filmorate project.  
 ## Диаграмма "Сущность связь" (ER-diagramm)
-![ER - диаграмма проекта Filmorate](src/main/resources/Entity Relationship Diagram.jpg)
+![ER - диаграмма проекта Filmorate](src/main/resources/Entity%20Relationship%20Diagram.jpg)<br>
 [Ссылка на ER - диаграмму проекта Filmorate на ресурсе Miro](https://miro.com/welcomeonboard/MkpPbkM2Z1NOckt0TDlycXNHaFFab0xmTUtVYmpKMzdwRktHWnRKeWN5TUlIUVRFc28yaWZzTXpUY0dremRGWHwzNDU4NzY0NTU3NDQxMjc4NzQ0fDI=?share_link_id=408133644286)
 
 ## Примеры запросов к таблицам
