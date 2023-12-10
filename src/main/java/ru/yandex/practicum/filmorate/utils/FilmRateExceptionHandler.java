@@ -23,7 +23,7 @@ public class FilmRateExceptionHandler {
                 HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler ({NoDataFoundException.class})
+    @ExceptionHandler({NoDataFoundException.class})
     public ResponseEntity<ErrorDescription> catchNotFoundException(RuntimeException exception) {
         log.warn(exception.getMessage());
         return new ResponseEntity<>(new ErrorDescription(HttpStatus.NOT_FOUND.value(),
