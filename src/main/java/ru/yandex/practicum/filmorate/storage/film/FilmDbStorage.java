@@ -60,7 +60,7 @@ public class FilmDbStorage implements FilmStorage {
                 "duration = ?, rating_id = ?" +
                 "WHERE film_id = ?";
 
-         int result = jdbcTemplate.update(sqlQuery,
+        int result = jdbcTemplate.update(sqlQuery,
                 film.getName(),
                 film.getDescription(),
                 film.getReleaseDate(),
@@ -69,15 +69,15 @@ public class FilmDbStorage implements FilmStorage {
                 film.getId());
 
         if (result == 1) {
-            long film_id = film.getId();
-            setGenres(film_id, film.getGenres());
-            setLikes(film_id, film.getLikes());
+            long filmId = film.getId();
+            setGenres(filmId, film.getGenres());
+            setLikes(filmId, film.getLikes());
 
-            film = getFilmById(film_id);
+            film = getFilmById(filmId);
             return new ResponseEntity<>(film, HttpStatus.OK);
         } else {
-          log.warn("Фильм с id=" + film.getId() + " не обновлён, нет в базе");
-          throw new NoDataFoundException("Фильма с id=" + film.getId() + " нет в базе");
+            log.warn("Фильм с id=" + film.getId() + " не обновлён, нет в базе");
+            throw new NoDataFoundException("Фильма с id=" + film.getId() + " нет в базе");
         }
 
     }
@@ -110,9 +110,9 @@ public class FilmDbStorage implements FilmStorage {
 
     private Mpa getMpa(Long id) {
         String sqlQuery = "SELECT rating_id, name FROM rating  " +
-                          "WHERE rating_id = (SELECT rating_id " +
-                                             "FROM film " +
-                                             "WHERE film_id = ?);";
+                "WHERE rating_id = (SELECT rating_id " +
+                "FROM film " +
+                "WHERE film_id = ?);";
 
         try {
             Mpa mpa = new Mpa();
@@ -128,12 +128,13 @@ public class FilmDbStorage implements FilmStorage {
             return new Mpa();
         }
     }
+
     private List<Genre> getGenres(Long id) {
         String sqlQuery = "SELECT g.genre_id, g.name \n" +
-                          "FROM genre g \n" +
-                          "WHERE g.genre_id IN (SELECT genre_id \n" +
-                          "                     FROM film_genre fg \n" +
-                          "                     WHERE film_id = ?);";
+                "FROM genre g \n" +
+                "WHERE g.genre_id IN (SELECT genre_id \n" +
+                "                     FROM film_genre fg \n" +
+                "                     WHERE film_id = ?);";
 
         try {
             List<Genre> genres = new ArrayList<>();
@@ -151,11 +152,11 @@ public class FilmDbStorage implements FilmStorage {
     private void setGenres(Long id, List<Genre> genres) {
         removeGenres(id);
         if (genres.size() > 0) {
-           for (Genre genre : genres) {
-               String sqlQuery = "INSERT INTO film_genre (film_id, genre_id) " +
-                       "VALUES (?, ?)" ;
-               jdbcTemplate.update(sqlQuery, id, genre.getId());
-           }
+            for (Genre genre : genres) {
+                String sqlQuery = "INSERT INTO film_genre (film_id, genre_id) " +
+                        "VALUES (?, ?)";
+                jdbcTemplate.update(sqlQuery, id, genre.getId());
+            }
         }
     }
 
@@ -168,7 +169,7 @@ public class FilmDbStorage implements FilmStorage {
         String sqlQuery = "SELECT user_id FROM likes WHERE film_id = ?";
         try {
             return jdbcTemplate.query(sqlQuery,
-                    (resultSet, rowNum) -> resultSet.getLong("user_id"),id);
+                    (resultSet, rowNum) -> resultSet.getLong("user_id"), id);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
@@ -178,7 +179,7 @@ public class FilmDbStorage implements FilmStorage {
         if (likes.size() > 0) {
             for (Long like : likes) {
                 String sqlQuery = "INSERT INTO likes (film_id, user_id) " +
-                        "VALUES (?, ?)" ;
+                        "VALUES (?, ?)";
                 jdbcTemplate.update(sqlQuery, id, like);
             }
         }
