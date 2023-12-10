@@ -94,17 +94,17 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {
-        Long film_id = resultSet.getLong("film_id");
+        Long filmId = resultSet.getLong("filmId");
 
         return Film.builder()
-                .id(film_id)
+                .id(filmId)
                 .name(resultSet.getString("name"))
                 .description(resultSet.getString("description"))
                 .releaseDate(resultSet.getDate("release_date").toLocalDate())
                 .duration(resultSet.getInt("duration"))
-                .mpa(getMpa(film_id))
-                .genres(getGenres(film_id))
-                .likes(new LinkedHashSet<>(getLikes(film_id)))
+                .mpa(getMpa(filmId))
+                .genres(getGenres(filmId))
+                .likes(new LinkedHashSet<>(getLikes(filmId)))
                 .build();
     }
 
