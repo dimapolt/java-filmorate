@@ -33,12 +33,16 @@ public class Film {
         likes.add(userId);
     }
 
-    public void unSetLike(Long userId) { likes.remove(userId); }
+    public void unSetLike(Long userId) {
+        likes.remove(userId);
+    }
 
     public int getLikesCount() {
         return likes.size();
     }
 
-    public int getGenresCount() {return genres.size();}
+    public int getGenresCount() {
+        return genres.size();
+    }
 
 }
