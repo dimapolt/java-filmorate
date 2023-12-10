@@ -2,8 +2,7 @@ package ru.yandex.practicum.filmorate.utils;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.NoDataFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
@@ -17,10 +16,10 @@ public class FilmRateValidator {
 
     public static void checkOnNull(Film film, User user) {
         if (film == null) {
-            throw new FilmNotFoundException("Фильм не найден!");
+            throw new NoDataFoundException("Фильм не найден!");
         }
         if (user == null) {
-            throw new UserNotFoundException("Пользователь не найден!");
+            throw new NoDataFoundException("Пользователь не найден!");
         }
     }
 
@@ -29,7 +28,7 @@ public class FilmRateValidator {
             log.info("Получен запрос на получения фильма");
         } else {
             log.warn(message);
-            throw new FilmNotFoundException(message);
+            throw new NoDataFoundException(message);
         }
     }
 
@@ -38,7 +37,7 @@ public class FilmRateValidator {
             log.info("Получен запрос на получение пользователя");
         } else {
             log.warn(message);
-            throw new UserNotFoundException(message);
+            throw new NoDataFoundException(message);
         }
     }
 

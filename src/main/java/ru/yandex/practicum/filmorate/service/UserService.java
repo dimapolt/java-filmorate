@@ -2,10 +2,11 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.NoDataFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.utils.FilmRateValidator;
@@ -20,7 +21,7 @@ public class UserService {
     private final UserStorage userStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
@@ -44,10 +45,12 @@ public class UserService {
     }
 
     public String addFriend(Long userId, Long friendId) {
+
         User user = getUserIfExist(userId);
-        User friend = getUserIfExist(friendId);
+        getUserIfExist(friendId); // Проверка наличия "друга" в базе
+
         user.addFriend(friendId);
-        friend.addFriend(userId);
+        userStorage.updateUser(user);
 
         String message = "Пользователь с id=" + friendId + " добавлен в друзья";
         log.info(message);
@@ -56,9 +59,7 @@ public class UserService {
 
     public String removeFriend(Long userId, Long friendId) {
         User user = getUserIfExist(userId);
-        User friend = getUserIfExist(friendId);
-        user.removeFriend(friendId);
-        friend.removeFriend(userId);
+        userStorage.removeFriend(userId, friendId);
 
         String message = "Пользователь с id=" + friendId + " удалён из друзей";
         log.info(message);
@@ -93,7 +94,7 @@ public class UserService {
 
         if (userO.isEmpty()) {
             log.warn("Пользователь с id=" + id + " не найден!");
-            throw new UserNotFoundException("Пользователь с id=" + id + " не найден!");
+            throw new NoDataFoundException("Пользователь с id=" + id + " не найден!");
         } else {
             return userO.get();
         }

@@ -60,5 +60,12 @@ public class InMemoryUserStorage implements UserStorage {
         return users.get(id);
     }
 
-
+    @Override
+    public boolean removeFriend(Long id, Long friendId) {
+        if (users.containsKey(id)) {
+            users.get(id).removeFriend(friendId);
+            return true;
+        }
+        return false;
+    }
 }

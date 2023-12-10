@@ -1,12 +1,12 @@
 package ru.yandex.practicum.filmorate.utils;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import ru.yandex.practicum.filmorate.exceptions.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exceptions.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.NoDataFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 
 /**
@@ -23,7 +23,7 @@ public class FilmRateExceptionHandler {
                 HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler ({UserNotFoundException.class, FilmNotFoundException.class})
+    @ExceptionHandler ({NoDataFoundException.class})
     public ResponseEntity<ErrorDescription> catchNotFoundException(RuntimeException exception) {
         log.warn(exception.getMessage());
         return new ResponseEntity<>(new ErrorDescription(HttpStatus.NOT_FOUND.value(),

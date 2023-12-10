@@ -1,28 +1,31 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
-import java.util.LinkedHashSet;
+import java.util.*;
 
-import java.util.Set;
-
+@Builder
 @Data
+@AllArgsConstructor
 public class Film {
     private Long id;
     private String name;
     private String description;
     private LocalDate releaseDate;
     private Integer duration;
+    /**
+     * Данные из сторонних таблиц
+     */
+    private Mpa mpa; // таблица rating
+    private List<Genre> genres; // таблица genre
 
-    @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
-    private Set<Long> likes;
+    private Set<Long> likes; // таблица likes
 
     public Film() {
+        mpa = new Mpa();
+        genres = new ArrayList<>();
         likes = new LinkedHashSet<>();
     }
 
@@ -30,12 +33,12 @@ public class Film {
         likes.add(userId);
     }
 
-    public void unSetLike(Long userId) {
-        likes.remove(userId);
-    }
+    public void unSetLike(Long userId) { likes.remove(userId); }
 
     public int getLikesCount() {
         return likes.size();
     }
+
+    public int getGenresCount() {return genres.size();}
 
 }

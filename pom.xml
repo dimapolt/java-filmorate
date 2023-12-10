@@ -61,6 +61,12 @@
 			<version>3.2.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.netbeans.external</groupId>
+			<artifactId>com-google-gson</artifactId>
+			<version>RELEASE113</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
