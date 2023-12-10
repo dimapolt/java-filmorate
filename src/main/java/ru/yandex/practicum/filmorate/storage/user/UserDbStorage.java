@@ -65,10 +65,10 @@ public class UserDbStorage implements UserStorage {
                 user.getId());
 
         if (result == 1) {
-            long user_id = user.getId();
-            updateFriends(user_id, user.getFriendsId());
+            long userId = user.getId();
+            updateFriends(userId, user.getFriendsId());
 
-            user = getUserById(user_id);
+            user = getUserById(userId);
             return new ResponseEntity<>(user, HttpStatus.OK);
         } else {
             log.warn("Фильм с id=" + user.getId() + " не обновлён, нет в базе");
@@ -111,7 +111,7 @@ public class UserDbStorage implements UserStorage {
 
         try {
             return jdbcTemplate.query(sqlQuery,
-                    (resultSet, rowNum) -> resultSet.getLong("friend_id"),id);
+                    (resultSet, rowNum) -> resultSet.getLong("friend_id"), id);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
@@ -133,7 +133,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     private void addAllFriends(Long id, Set<Long> friends) {
-        for(Long friendId : friends) {
+        for (Long friendId : friends) {
             String sqlQuery = "INSERT INTO friendship (user_id, friend_id) VALUES (?,?);";
             jdbcTemplate.update(sqlQuery, id, friendId);
         }
