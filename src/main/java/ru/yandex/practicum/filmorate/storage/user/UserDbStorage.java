@@ -43,6 +43,7 @@ public class UserDbStorage implements UserStorage {
         long idReturn = simpleJdbcInsert.executeAndReturnKey(getMapFromUser(user)).longValue();
 
         user.setId(idReturn);
+        updateFriends(idReturn, user.getFriendsId());
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
