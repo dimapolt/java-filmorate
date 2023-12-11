@@ -1,15 +1,14 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.Email;
 import java.time.LocalDate;
 import java.util.*;
 
+@Builder
 @Data
+@AllArgsConstructor
 public class User {
     private Long id;
     @Email
