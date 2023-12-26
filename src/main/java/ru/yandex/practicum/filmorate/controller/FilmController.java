@@ -46,7 +46,7 @@ public class FilmController {
 
     @DeleteMapping("/{id}/like/{userId}")
     public String unSetLike(@NonNull @PathVariable("id") Long filmId, @NonNull @PathVariable Long userId) {
-        return filmService.setLike(filmId, userId);
+        return filmService.unSetLike(filmId, userId);
     }
 
     @GetMapping("/popular")
@@ -54,5 +54,8 @@ public class FilmController {
         return filmService.getFilmsByLikes(count);
     }
 
-
+    @GetMapping("/common")
+    public List<Film> getCommonFilms(@RequestParam(required = true) Long userId, @RequestParam(required = true) Long friendId) {
+        return filmService.getCommonFilms(userId, friendId);
+    }
 }

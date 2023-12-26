@@ -65,6 +65,8 @@ public class FilmService {
 
         film.unSetLike(userId);
 
+        filmStorage.updateFilm(film);
+
         return "Удалена оценка от " + userId + " фильму " + filmId;
     }
 
@@ -80,4 +82,11 @@ public class FilmService {
         }
     }
 
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
+        List<Film> films = filmStorage.getCommonFilms(userId, friendId);
+
+        films.sort((f1, f2) -> f2.getLikesCount() - f1.getLikesCount());
+
+        return films;
+    }
 }
