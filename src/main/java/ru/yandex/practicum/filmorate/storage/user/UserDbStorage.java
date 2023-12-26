@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.exceptions.NoDataFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.utils.FilmRateValidator;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
