@@ -95,7 +95,8 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getCommonFilms(Long userId, Long friendId) {
-        String sqlQuery = "SELECT film_id FROM likes WHERE user_id = ? INTERSECT SELECT film_id FROM likes WHERE user_id = ?";
+        String sqlQuery = "SELECT film_id FROM likes WHERE user_id = ? " +
+                          "INTERSECT SELECT film_id FROM likes WHERE user_id = ?";
         try {
             return jdbcTemplate.query(sqlQuery,
                     (resultSet, rowNum) -> getFilmById(resultSet.getLong("film_id")), userId, friendId);
