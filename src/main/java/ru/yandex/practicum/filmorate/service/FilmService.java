@@ -46,6 +46,12 @@ public class FilmService {
         return filmStorage.updateFilm(film);
     }
 
+    public String deleteFilm(Long filmId) {
+        filmStorage.deleteFilm(filmId);
+
+        return "Фильм с id=" + filmId + " успешно удален!";
+    }
+
     public String setLike(Long filmId, Long userId) {
         Film film = filmStorage.getFilmById(filmId);
         User user = userStorage.getUserById(userId);
