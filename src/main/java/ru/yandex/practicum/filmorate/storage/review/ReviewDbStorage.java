@@ -21,7 +21,13 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public Review createReview(Review review) {
-        return null;
+        String sqlQuery = "INSERT INTO reviews (content, isPositive, film_id, user_id) " +
+                "VALUES (?, ?, ?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(new ReviewPreparedStatementCreator(sqlQuery, review), keyHolder);
+        long id = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        review.setReviewId(id);
+        return review;
     }
 
     @Override
