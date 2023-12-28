@@ -37,17 +37,24 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public List<Review> getAllReviews() {
-        return null;
+        String sqlQuery = "SELECT * FROM reviews";
+        return jdbcTemplate.query(sqlQuery, new ReviewResultSetExtractor());
     }
 
     @Override
     public Review getReviewById(long id) {
-        return null;
+        String sqlQuery = "SELECT * FROM reviews WHERE review_id = ?";
+        List<Review> reviews = jdbcTemplate.query(sqlQuery, new ReviewResultSetExtractor(), id);
+        if (reviews == null) {
+            return null;
+        }
+        return reviews.get(0);
     }
 
     @Override
     public void deleteReviewById(long id) {
-
+        String sqlQuery = "DELETE FROM reviews WHERE review_id = ?";
+        jdbcTemplate.update(sqlQuery, id);
     }
 
     @Override
