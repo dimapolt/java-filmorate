@@ -29,4 +29,12 @@ public class ReviewController {
         log.info("На запрос POST /reviews отправлен ответ с телом: {}", createdReview);
         return createdReview;
     }
+
+    @GetMapping("/{id}")
+    public Review getReviewById(@PathVariable long id) {
+        log.info("Пришел GET /reviews/{} запрос", id);
+        final Review review = reviewService.getReviewById(id);
+        log.info("На запрос GET /reviews/{} отправлен ответ с размером тела: 1", id);
+        return review;
+    }
 }
