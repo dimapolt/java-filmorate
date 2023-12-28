@@ -26,7 +26,7 @@ public class ReviewController {
     public Review createReview(@Valid @RequestBody Review review) {
         log.info("Пришел POST /reviews запрос с телом: {}", review);
         final Review createdReview = reviewService.createReview(review);
-        log.info("На запрос POST /reviews отправлен ответ с телом: {}",createdReview);
+        log.info("На запрос POST /reviews отправлен ответ с телом: {}", createdReview);
         return createdReview;
     }
 }
