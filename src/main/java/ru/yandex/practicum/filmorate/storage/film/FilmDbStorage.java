@@ -93,6 +93,18 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
+    @Override
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
+        String sqlQuery = "SELECT film_id FROM likes WHERE user_id = ? " +
+                          "INTERSECT SELECT film_id FROM likes WHERE user_id = ?";
+        try {
+            return jdbcTemplate.query(sqlQuery,
+                    (resultSet, rowNum) -> getFilmById(resultSet.getLong("film_id")), userId, friendId);
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
+    }
+
     private Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {
         Long filmId = resultSet.getLong("film_id");
 
@@ -176,6 +188,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private void setLikes(Long id, Set<Long> likes) {
+        jdbcTemplate.update("DELETE FROM likes WHERE user_id = ?", id);
         if (likes.size() > 0) {
             for (Long like : likes) {
                 String sqlQuery = "INSERT INTO likes (film_id, user_id) " +
