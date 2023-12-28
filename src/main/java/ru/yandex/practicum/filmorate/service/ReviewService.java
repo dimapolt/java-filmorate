@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.utils.FilmRateValidator;
+import ru.yandex.practicum.filmorate.utils.ReviewNotFoundException;
 
 @Service
 public class ReviewService {
@@ -42,4 +43,13 @@ public class ReviewService {
         return newReview;
     }
 
+    public Review getReviewById(long id) {
+        Review review = reviewStorage.getReviewById(id);
+        if (review == null) {
+            String message = String.format("Отзыв с id=%d не найден в базе данных!", id);
+            throw new ReviewNotFoundException(message);
+        }
+        return review;
+    }
+    
 }
