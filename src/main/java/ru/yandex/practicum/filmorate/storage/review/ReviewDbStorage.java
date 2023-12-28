@@ -41,32 +41,32 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public Review getReviewById(int id) {
+    public Review getReviewById(long id) {
         return null;
     }
 
     @Override
-    public void deleteReviewById(int id) {
+    public void deleteReviewById(long id) {
 
     }
 
     @Override
-    public void addLikeForFilmReview(int reviewId, int userId) {
+    public void addLikeForFilmReview(long reviewId, long userId) {
 
     }
 
     @Override
-    public void addDislikeForFilmReview(int reviewId, int userId) {
+    public void addDislikeForFilmReview(long reviewId, long userId) {
 
     }
 
     @Override
-    public void deleteLikeForFilmReview(int reviewId, int userId) {
+    public void deleteLikeForFilmReview(long reviewId, long userId) {
 
     }
 
     @Override
-    public void deleteDislikeForFilmReview(int reviewId, int userId) {
+    public void deleteDislikeForFilmReview(long reviewId, long userId) {
 
     }
 }
