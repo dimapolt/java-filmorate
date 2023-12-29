@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.utils.ReviewNotFoundException;
 
 import java.util.List;
 import java.util.Objects;
@@ -32,7 +33,26 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public Review updateReview(Review review) {
-        return null;
+        String sqlQuery = "UPDATE reviews SET " +
+                "content = ?, " +
+                "isPositive = ? " +
+                "film_id = ? " +
+                "user_id = ? " +
+                "WHERE review_id = ?";
+        String content = review.getContent();
+        boolean isPositive = review.isPositive();
+        long filmId = review.getFilmId();
+        long userId = review.getUserId();
+        long reviewId = review.getReviewId();
+        Object[] args = {content, isPositive, filmId, userId, reviewId};
+
+        int countUpdatedRows = jdbcTemplate.update(sqlQuery, args);
+        if (countUpdatedRows == 0) {
+            String message = String.format("Отзыв с id=%d не найден в базе данных! Операция обновления невозможна!",
+                    review.getReviewId());
+            throw new ReviewNotFoundException(message);
+        }
+        return review;
     }
 
     @Override
