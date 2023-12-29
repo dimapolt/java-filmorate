@@ -39,10 +39,7 @@ public class DirectorDbStorageTest {
     public void getDirectorById() {
         Director savedDirector = directorDbStorage.getDirectorById(1L);
 
-        assertThat(savedDirector)
-                .isNotNull()
-                .usingRecursiveComparison()
-                .isEqualTo(director);
+        assertThat(savedDirector).isNotNull().usingRecursiveComparison().isEqualTo(director);
     }
 
     @Test
@@ -70,8 +67,7 @@ public class DirectorDbStorageTest {
         directorDbStorage.deleteDirector(1L);
 
         assertThrows(NoDataFoundException.class,
-                ()->directorDbStorage.getDirectorById(1L),
-                "Режиссёра с id=1 нет в базе");
+                () -> directorDbStorage.getDirectorById(1L), "Режиссёра с id=1 нет в базе");
     }
 
 }
