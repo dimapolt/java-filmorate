@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.NoDataFoundException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -36,6 +37,22 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getFilmsByDirector(Long id) {
+        List<Film> films = new ArrayList<>();
+
+        String sqlQuery = "SELECT fd.film_id FROM film_director fd WHERE director_id = ?;";
+        SqlRowSet filmsId = jdbcTemplate.queryForRowSet(sqlQuery, id);
+
+        while (filmsId.next()) {
+            long filmId = filmsId.getLong("film_id");
+            films.add(getFilmById(filmId));
+        }
+
+        return films;
+    }
+
+
+    @Override
     public ResponseEntity<Film> createFilm(Film film) {
         FilmRateValidator.filmValid(film);
 
@@ -46,6 +63,7 @@ public class FilmDbStorage implements FilmStorage {
         long idReturn = simpleJdbcInsert.executeAndReturnKey(getMapFromFilm(film)).longValue();
 
         setGenres(idReturn, film.getGenres());
+        setDirectors(idReturn, film.getDirectors());
 
         film.setId(idReturn);
         return new ResponseEntity<>(film, HttpStatus.CREATED);
@@ -71,6 +89,7 @@ public class FilmDbStorage implements FilmStorage {
         if (result == 1) {
             long filmId = film.getId();
             setGenres(filmId, film.getGenres());
+            setDirectors(filmId, film.getDirectors());
             setLikes(filmId, film.getLikes());
 
             film = getFilmById(filmId);
@@ -105,7 +124,9 @@ public class FilmDbStorage implements FilmStorage {
                 .mpa(getMpa(filmId))
                 .genres(getGenres(filmId))
                 .likes(new LinkedHashSet<>(getLikes(filmId)))
+                .directors(getDirector(filmId))
                 .build();
+
     }
 
     private Mpa getMpa(Long id) {
@@ -141,9 +162,32 @@ public class FilmDbStorage implements FilmStorage {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlQuery, id);
 
             while (rowSet.next()) {
-                genres.add(new Genre(rowSet.getInt("genre_id"), rowSet.getString("name")));
+                genres.add(new Genre(rowSet.getInt("genre_id"),
+                        rowSet.getString("name")));
             }
             return genres;
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
+    }
+
+    private List<Director> getDirector(Long id) {
+        String sqlQuery = "SELECT d.director_id, d.name \n" +
+                "FROM directors d \n" +
+                "WHERE d.director_id IN (SELECT director_id \n" +
+                "                        FROM film_director fd \n" +
+                "                        WHERE film_id = ?);";
+
+        try {
+            List<Director> directors = new ArrayList<>();
+            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlQuery, id);
+
+            while (rowSet.next()) {
+                directors.add(new Director(rowSet.getLong("director_id"),
+                        rowSet.getString("name")));
+            }
+
+            return directors;
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
@@ -160,9 +204,26 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
-    private boolean removeGenres(Long id) {
+    private void removeGenres(Long id) {
         String sqlQuery = "DELETE FROM film_genre WHERE film_id = ?;";
-        return jdbcTemplate.update(sqlQuery, id) > 0;
+        jdbcTemplate.update(sqlQuery, id);
+    }
+
+    private void setDirectors(Long id, List<Director> directors) {
+        removeDirectors(id);
+
+        if (directors.size() > 0) {
+            for (Director director : directors) {
+                String sqlQuery = "INSERT INTO film_director (film_id, director_id) " +
+                        "VALUES (?, ?)";
+                jdbcTemplate.update(sqlQuery, id, director.getId());
+            }
+        }
+    }
+
+    private void removeDirectors(Long id) {
+        String sqlQuery = "DELETE FROM film_director WHERE film_id = ?;";
+        jdbcTemplate.update(sqlQuery, id);
     }
 
     private List<Long> getLikes(Long id) {

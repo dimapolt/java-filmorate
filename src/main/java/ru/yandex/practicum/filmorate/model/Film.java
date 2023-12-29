@@ -3,7 +3,10 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 @Builder
 @Data
@@ -19,6 +22,7 @@ public class Film {
      */
     private Mpa mpa; // таблица rating
     private List<Genre> genres; // таблица genre
+    private List<Director> directors; // режиссёры фильма
 
     @Setter(AccessLevel.NONE)
     private Set<Long> likes; // таблица likes
@@ -27,6 +31,7 @@ public class Film {
         mpa = new Mpa();
         genres = new ArrayList<>();
         likes = new LinkedHashSet<>();
+        directors = new ArrayList<>();
     }
 
     public void setLike(Long userId) {
@@ -39,10 +44,6 @@ public class Film {
 
     public int getLikesCount() {
         return likes.size();
-    }
-
-    public int getGenresCount() {
-        return genres.size();
     }
 
 }
