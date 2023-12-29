@@ -83,6 +83,16 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public void deleteFilm(Long id) {
+        String sqlQuery = "DELETE FROM film WHERE film_id = ?";
+
+        if (jdbcTemplate.update(sqlQuery, id) == 0) {
+            log.warn("Фильма с id=" + id + " нет в базе");
+            throw new NoDataFoundException("Фильма с id=" + id + " нет в базе");
+        }
+    }
+
+    @Override
     public Film getFilmById(Long id) {
         String sqlQuery = "SELECT * FROM film WHERE film_id = ?";
         try {
