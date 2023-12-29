@@ -32,6 +32,12 @@ public class UserService {
         return userStorage.updateUser(user);
     }
 
+    public String deleteUser(Long userId) {
+        userStorage.deleteUser(userId);
+
+        return "Пользователь с id=" + userId + " успешно удален!";
+    }
+
     public List<User> getAllUsers() {
         return userStorage.getAllUsers();
     }

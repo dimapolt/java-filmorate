@@ -14,5 +14,9 @@ public interface FilmStorage {
 
     ResponseEntity<Film> updateFilm(Film film);
 
+    void deleteFilm(Long id);
+
     Film getFilmById(Long id);
+
+    List<Film> getCommonFilms(Long userId, Long friendId);
 }

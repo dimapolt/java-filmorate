@@ -60,6 +60,12 @@ public class FilmService {
         return filmStorage.updateFilm(film);
     }
 
+    public String deleteFilm(Long filmId) {
+        filmStorage.deleteFilm(filmId);
+
+        return "Фильм с id=" + filmId + " успешно удален!";
+    }
+
     public String setLike(Long filmId, Long userId) {
         Film film = filmStorage.getFilmById(filmId);
         User user = userStorage.getUserById(userId);
@@ -78,6 +84,8 @@ public class FilmService {
         FilmRateValidator.checkOnNull(film, user);
 
         film.unSetLike(userId);
+
+        filmStorage.updateFilm(film);
 
         return "Удалена оценка от " + userId + " фильму " + filmId;
     }
@@ -124,5 +132,12 @@ public class FilmService {
         return films;
     }
 
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
+        List<Film> films = filmStorage.getCommonFilms(userId, friendId);
+
+        films.sort((f1, f2) -> f2.getLikesCount() - f1.getLikesCount());
+
+        return films;
+    }
 
 }

@@ -64,4 +64,12 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
     }
 
+    @Override
+    public void deleteFilm(Long id) {
+    }
+
+    @Override
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
+        return new ArrayList<>();
+    }
 }

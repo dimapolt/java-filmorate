@@ -12,6 +12,8 @@ public interface UserStorage {
 
     ResponseEntity<User> updateUser(User user);
 
+    void deleteUser(Long id);
+
     User getUserById(Long id);
 
     boolean removeFriend(Long id, Long friendId);

@@ -102,6 +102,16 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public void deleteFilm(Long id) {
+        String sqlQuery = "DELETE FROM film WHERE film_id = ?";
+
+        if (jdbcTemplate.update(sqlQuery, id) == 0) {
+            log.warn("Фильма с id=" + id + " нет в базе");
+            throw new NoDataFoundException("Фильма с id=" + id + " нет в базе");
+        }
+    }
+
+    @Override
     public Film getFilmById(Long id) {
         String sqlQuery = "SELECT * FROM film WHERE film_id = ?";
         try {
@@ -109,6 +119,18 @@ public class FilmDbStorage implements FilmStorage {
         } catch (EmptyResultDataAccessException e) {
             log.warn("Фильма с id=" + id + " нет в базе");
             throw new NoDataFoundException("Фильма с id=" + id + " нет в базе");
+        }
+    }
+
+    @Override
+    public List<Film> getCommonFilms(Long userId, Long friendId) {
+        String sqlQuery = "SELECT film_id FROM likes WHERE user_id = ? " +
+                          "INTERSECT SELECT film_id FROM likes WHERE user_id = ?";
+        try {
+            return jdbcTemplate.query(sqlQuery,
+                    (resultSet, rowNum) -> getFilmById(resultSet.getLong("film_id")), userId, friendId);
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
         }
     }
 
@@ -237,6 +259,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private void setLikes(Long id, Set<Long> likes) {
+        jdbcTemplate.update("DELETE FROM likes WHERE user_id = ?", id);
         if (likes.size() > 0) {
             for (Long like : likes) {
                 String sqlQuery = "INSERT INTO likes (film_id, user_id) " +
