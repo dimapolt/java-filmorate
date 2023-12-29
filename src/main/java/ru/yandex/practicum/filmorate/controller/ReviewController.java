@@ -30,6 +30,14 @@ public class ReviewController {
         return createdReview;
     }
 
+    @PutMapping
+    public Review updateReview(@Valid @RequestBody Review review) {
+        log.info("Пришел PUT /reviews запрос с телом: {}", review);
+        final Review updatedReview = reviewService.updateReview(review);
+        log.info("На запрос PUT /reviews отправлен ответ с телом: {}", updatedReview);
+        return updatedReview;
+    }
+
     @GetMapping("/{id}")
     public Review getReviewById(@PathVariable long id) {
         log.info("Пришел GET /reviews/{} запрос", id);
