@@ -51,7 +51,6 @@ public class FilmDbStorage implements FilmStorage {
         return films;
     }
 
-
     @Override
     public ResponseEntity<Film> createFilm(Film film) {
         FilmRateValidator.filmValid(film);

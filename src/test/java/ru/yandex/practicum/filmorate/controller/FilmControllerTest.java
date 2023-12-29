@@ -84,5 +84,4 @@ class FilmControllerTest {
         assertEquals("Передан фильм с отрицательной продолжительностью", exception.getMessage());
     }
 
-
 }
