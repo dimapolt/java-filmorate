@@ -34,7 +34,15 @@ public class ReviewController {
     public Review getReviewById(@PathVariable long id) {
         log.info("Пришел GET /reviews/{} запрос", id);
         final Review review = reviewService.getReviewById(id);
-        log.info("На запрос GET /reviews/{} отправлен ответ с размером тела: 1", id);
+        log.info("На запрос GET /reviews/{} отправлен ответ с телом: {}", id, review);
         return review;
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT) // устанавливаем код ответа 204
+    public void deleteReviewById(@PathVariable long id) {
+        log.info("Пришел DELETE /reviews/{} запрос", id);
+        reviewService.deleteReviewById(id);
+        log.info("Отзыв с id={} успешно удален!", id);
     }
 }
