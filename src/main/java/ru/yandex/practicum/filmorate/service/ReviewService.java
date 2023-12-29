@@ -28,16 +28,8 @@ public class ReviewService {
     }
 
     public Review createReview(Review review) {
-        long filmId = review.getFilmId();
-        Film film = filmStorage.getFilmById(filmId);
-        String filmMessage = String.format("Фильм с id=%d не найден в базе данных!", filmId);
-        FilmRateValidator.checkOnNull(film, filmMessage);
-
-        long userId = review.getUserId();
-        User user = userStorage.getUserById(userId);
-        String userMessage = String.format("Пользователь с id=%d не найден в базе данных!", userId);
-        FilmRateValidator.checkOnNull(user, userMessage);
-
+        checkFilmExist(review);
+        checkUserExist(review);
         Review newReview = reviewStorage.createReview(review); // создаем новый отзыв на фильм
         // добавляем новый отзыв в ленту событий
         return newReview;
