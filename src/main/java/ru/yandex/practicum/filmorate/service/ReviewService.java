@@ -51,5 +51,13 @@ public class ReviewService {
         }
         return review;
     }
-    
+
+    public void deleteReviewById(long id) {
+        Long reviewId = reviewStorage.deleteReviewById(id);
+        if (reviewId == null) {
+            String message = String.format("Отзыв с id=%d не найден в базе данных! Операция удаления невозможна!", id);
+            throw new ReviewNotFoundException(message);
+        }
+        // добавляем удаление отзыва в ленту событий
+    }
 }
