@@ -43,6 +43,14 @@ public class ReviewService {
         return newReview;
     }
 
+    public Review updateReview(Review review) {
+        checkFilmExist(review);
+        checkUserExist(review);
+        Review updatedReview = reviewStorage.updateReview(review);
+        // добавляем обновление отзыва в ленте событий
+        return updatedReview;
+    }
+
     public Review getReviewById(long id) {
         Review review = reviewStorage.getReviewById(id);
         if (review == null) {
@@ -59,5 +67,15 @@ public class ReviewService {
             throw new ReviewNotFoundException(message);
         }
         // добавляем удаление отзыва в ленту событий
+    }
+
+    private void checkFilmExist(Review review) {
+        long filmId = review.getFilmId();
+        filmStorage.getFilmById(filmId); // метод выбрасывает NoDataException если фильм не найден по id
+    }
+
+    private void checkUserExist(Review review) {
+        long userId = review.getUserId();
+        userStorage.getUserById(userId); // метод выбрасывает NoDataException если пользователь не найден по id
     }
 }
