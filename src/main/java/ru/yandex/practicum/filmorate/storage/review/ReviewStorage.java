@@ -13,7 +13,7 @@ public interface ReviewStorage {
 
     Review getReviewById(long id);
 
-    void deleteReviewById(long id);
+    Long deleteReviewById(long id);
 
     void addLikeForFilmReview(long reviewId, long userId);
 
