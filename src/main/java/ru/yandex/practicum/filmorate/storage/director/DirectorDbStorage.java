@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.director;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class DirectorDbStorage implements DirectorStorage {
     private final JdbcTemplate jdbcTemplate;
@@ -73,9 +73,9 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public void deleteDirector(Long id) {
+    public boolean deleteDirector(Long id) {
         String sqlQuery = "DELETE FROM directors WHERE director_id = ?;";
-        jdbcTemplate.update(sqlQuery, id);
+        return jdbcTemplate.update(sqlQuery, id) > 0;
     }
 
     private Director mapRowToDirector(ResultSet resultSet, int rowNum) throws SQLException {

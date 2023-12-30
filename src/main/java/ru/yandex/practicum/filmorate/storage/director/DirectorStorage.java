@@ -14,5 +14,5 @@ public interface DirectorStorage {
 
     ResponseEntity<Director> updateDirector(Director director);
 
-    void deleteDirector(Long id);
+    boolean deleteDirector(Long id);
 }

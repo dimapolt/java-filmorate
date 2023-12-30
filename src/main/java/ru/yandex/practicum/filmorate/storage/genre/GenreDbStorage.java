@@ -24,7 +24,7 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public List<Genre> getAllGenres() {
-        String sqlQuery = "SELECT * FROM genre;";
+        String sqlQuery = "SELECT * FROM genres;";
         List<Genre> genres = new ArrayList<>();
 
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlQuery);
@@ -37,7 +37,7 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public Genre getGenreById(Integer id) {
-        String sqlQuery = "SELECT * FROM genre WHERE genre_id = ?;";
+        String sqlQuery = "SELECT * FROM genres WHERE genre_id = ?;";
 
         try {
             return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToGenre, id);

@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.utils;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -20,7 +20,7 @@ import java.util.List;
  */
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class FilmExtraValidator {
     private final MpaService mpaService;
     private final GenreService genreService;

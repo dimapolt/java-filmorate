@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.utils.DirectorValidator;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -40,18 +39,17 @@ public class DirectorService {
     }
 
     public String deleteDirector(Long id) {
-        Optional<Director> director = Optional.ofNullable(directorStorage.getDirectorById(id));
         String message;
 
-        if (director.isEmpty()) {
-            message = "Режиссёра с id=" + id + "нет в базе";
-            log.warn(message);
-            throw new NoDataFoundException(message);
-        } else {
-            directorStorage.deleteDirector(id);
+        if (directorStorage.deleteDirector(id)) {
             message = "Режиссёр с id=" + id + "удалён из базы данных";
             log.info(message);
             return message;
+        } else {
+            message = "Режиссёра с id=" + id + "нет в базе";
+            log.warn(message);
+            throw new NoDataFoundException(message);
         }
     }
+
 }

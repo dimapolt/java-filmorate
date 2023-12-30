@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Set;
 
 @Builder
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 public class Film {
     private Long id;

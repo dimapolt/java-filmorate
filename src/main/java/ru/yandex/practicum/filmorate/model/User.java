@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.Set;
 
 @Builder
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 public class User {
     private Long id;
@@ -36,13 +38,8 @@ public class User {
         friends.add(friendId);
     }
 
-    public Long removeFriend(long id) {
-        if (friends.contains(id)) {
-            friends.remove(id);
-            return id;
-        } else {
-            return 0L;
-        }
+    public void removeFriend(long id) {
+        friends.remove(id);
     }
 
 }
