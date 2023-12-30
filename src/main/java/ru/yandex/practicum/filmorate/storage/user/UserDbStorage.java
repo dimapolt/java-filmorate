@@ -151,7 +151,7 @@ public class UserDbStorage implements UserStorage {
 
     private void deleteAllFriends(Long id) {
         String sqlQuery = "DELETE FROM friendship WHERE user_id = ?";
-        jdbcTemplate.update(sqlQuery, id) ;
+        jdbcTemplate.update(sqlQuery, id);
     }
 
 
