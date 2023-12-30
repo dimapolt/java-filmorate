@@ -2,28 +2,37 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.utils.FilmExtraValidator;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+@ExtendWith(MockitoExtension.class)
 class FilmControllerTest {
     FilmController filmController;
+    @InjectMocks
     FilmService filmService;
     FilmStorage filmStorage;
     UserStorage userStorage;
+    @Mock
+    FilmExtraValidator filmExtraValidator;
 
     @BeforeEach
     void init() {
         filmStorage = new InMemoryFilmStorage();
-        filmService = new FilmService(filmStorage, userStorage);
+        filmService = new FilmService(filmStorage, userStorage, filmExtraValidator);
         filmController = new FilmController(filmService);
     }
 
@@ -69,10 +78,10 @@ class FilmControllerTest {
         film.setDescription("Description without name");
         film.setReleaseDate(LocalDate.now());
         film.setDuration(-1);
+
         final ValidationException exception = assertThrows(ValidationException.class,
                 () -> filmController.createFilm(film));
         assertEquals("Передан фильм с отрицательной продолжительностью", exception.getMessage());
     }
-
 
 }

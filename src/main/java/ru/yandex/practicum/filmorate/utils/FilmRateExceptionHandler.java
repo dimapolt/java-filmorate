@@ -30,5 +30,4 @@ public class FilmRateExceptionHandler {
                 HttpStatus.NOT_FOUND);
     }
 
-
 }
