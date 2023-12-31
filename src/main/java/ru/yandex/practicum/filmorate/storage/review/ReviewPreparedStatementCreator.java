@@ -20,7 +20,7 @@ public class ReviewPreparedStatementCreator implements PreparedStatementCreator 
     @Override
     public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
         String content = review.getContent();
-        boolean isPositive = review.isPositive();
+        boolean isPositive = review.getIsPositive();
         long filmId = review.getFilmId();
         long userId = review.getUserId();
 
