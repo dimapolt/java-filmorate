@@ -40,7 +40,7 @@ public class ReviewDbStorage implements ReviewStorage {
                 "user_id = ? " +
                 "WHERE review_id = ?";
         String content = review.getContent();
-        boolean isPositive = review.isPositive();
+        boolean isPositive = review.getIsPositive();
         long filmId = review.getFilmId();
         long userId = review.getUserId();
         long reviewId = review.getReviewId();
@@ -65,8 +65,10 @@ public class ReviewDbStorage implements ReviewStorage {
     public Review getReviewById(long id) {
         String sqlQuery = "SELECT * FROM reviews WHERE review_id = ?";
         List<Review> reviews = jdbcTemplate.query(sqlQuery, new ReviewResultSetExtractor(), id);
-        if (reviews == null) {
-            return null;
+        assert reviews != null;
+        if (reviews.isEmpty()) {
+            String message = String.format("Отзыв с id=%d не найден в базе данных!", id);
+            throw new ReviewNotFoundException(message);
         }
         return reviews.get(0);
     }
@@ -76,7 +78,8 @@ public class ReviewDbStorage implements ReviewStorage {
         String sqlQuery = "DELETE FROM reviews WHERE review_id = ?";
         int result = jdbcTemplate.update(sqlQuery, id);
         if (result == 0) {
-            return null;
+            String message = String.format("Отзыв с id=%d не найден в базе данных! Операция удаления невозможна!", id);
+            throw new ReviewNotFoundException(message);
         }
         return id;
     }
