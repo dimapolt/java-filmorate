@@ -44,20 +44,12 @@ public class ReviewService {
     }
 
     public Review getReviewById(long id) {
-        Review review = reviewStorage.getReviewById(id);
-        if (review == null) {
-            String message = String.format("Отзыв с id=%d не найден в базе данных!", id);
-            throw new ReviewNotFoundException(message);
-        }
-        return review;
+        return reviewStorage.getReviewById(id); // метод выбрасывает NoDataException если пользователь не найден по id
     }
 
     public void deleteReviewById(long id) {
-        Long reviewId = reviewStorage.deleteReviewById(id);
-        if (reviewId == null) {
-            String message = String.format("Отзыв с id=%d не найден в базе данных! Операция удаления невозможна!", id);
-            throw new ReviewNotFoundException(message);
-        }
+        Review deletedReview = reviewStorage.getReviewById(id); // получаем отзыв на фильм из БД перед удалением
+        reviewStorage.deleteReviewById(id); // удаляем отзыв на фильм из БД
         // добавляем удаление отзыва в ленту событий
     }
 
