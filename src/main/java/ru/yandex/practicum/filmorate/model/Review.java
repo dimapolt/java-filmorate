@@ -15,7 +15,9 @@ public class Review {
 
     @NotNull
     private String content;
-    private boolean isPositive;
+
+    @NotNull
+    private Boolean isPositive;
 
     @Positive
     private long userId;
