@@ -115,6 +115,15 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
+    @Override
+    public List<Long> getFilmsIdByParameters(String sqlQuery) {
+        try {
+            return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> rs.getLong("film_id"));
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
+    }
+
     private Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {
         Long filmId = resultSet.getLong("film_id");
 

@@ -67,4 +67,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     public List<Film> getCommonFilms(Long userId, Long friendId) {
         return new ArrayList<>();
     }
+
+    @Override
+    public List<Long> getFilmsIdByParameters(String sqlQuery) {
+        return new ArrayList<>();
+    }
 }

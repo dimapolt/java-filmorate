@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -12,6 +13,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.utils.FilmRateValidator;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -81,7 +83,7 @@ public class FilmService {
 
         films.sort((f1, f2) -> f2.getLikesCount() - f1.getLikesCount());
 
-        if (films.size() >= count) {
+        if (films.size() >= count && count != 0) {
             return films.subList(0, count);
         } else {
             return films;
@@ -95,4 +97,47 @@ public class FilmService {
 
         return films;
     }
+
+    public List<Film> getFilmsByParameters(String query, String by) {
+
+        if (query == null || by == null) {
+            return getFilmsByLikes(0);
+        } else {
+            switch (by) {
+                case "director,title":
+                case "title,director":
+                    return searchByTitleAndDirector(query);
+                case "director": return searchByDirector(query);
+                case "title": return searchByTitle(query);
+                default: throw new ValidationException("Передан неверный параметр для поиска!");
+            }
+        }
+    }
+
+    private List<Film> searchByDirector(String query) {
+        String sqlQuery = "SELECT f.film_id FROM film f WHERE f.film_id IN " +
+                "(SELECT fd.film_id FROM film_director fd WHERE fd.director_id IN " +
+                "(SELECT d.director_id FROM directors d " +
+                "WHERE d.name LIKE '%" + query + "%'));";
+
+        List<Long> filmsId = filmStorage.getFilmsIdByParameters(sqlQuery);
+
+        return filmsId.stream().map(filmStorage::getFilmById).collect(Collectors.toList());
+    }
+
+    private List<Film> searchByTitle(String query) {
+        String sqlQuery = "SELECT * FROM film f WHERE f.name LIKE '%" + query + "%';";
+
+        List<Long> filmsId = filmStorage.getFilmsIdByParameters(sqlQuery);
+
+        return filmsId.stream().map(filmStorage::getFilmById).collect(Collectors.toList());
+    }
+
+    private List<Film> searchByTitleAndDirector(String query) {
+        List<Film> films = searchByTitle(query);
+        films.add((Film) searchByDirector(query));
+
+        return films;
+    }
+
 }
