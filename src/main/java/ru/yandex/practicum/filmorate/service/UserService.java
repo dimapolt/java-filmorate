@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import ru.yandex.practicum.filmorate.exceptions.NoDataFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -64,7 +63,7 @@ public class UserService {
     }
 
     public String removeFriend(Long userId, Long friendId) {
-        User user = getUserIfExist(userId);
+        getUserIfExist(userId);
         userStorage.removeFriend(userId, friendId);
 
         String message = "Пользователь с id=" + friendId + " удалён из друзей";
