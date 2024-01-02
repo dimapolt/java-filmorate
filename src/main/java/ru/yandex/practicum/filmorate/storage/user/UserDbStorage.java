@@ -149,9 +149,9 @@ public class UserDbStorage implements UserStorage {
         }
     }
 
-    private boolean deleteAllFriends(Long id) {
+    private void deleteAllFriends(Long id) {
         String sqlQuery = "DELETE FROM friendship WHERE user_id = ?";
-        return jdbcTemplate.update(sqlQuery, id) > 0;
+        jdbcTemplate.update(sqlQuery, id);
     }
 
 

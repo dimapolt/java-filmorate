@@ -22,6 +22,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getFilmsByDirector(Long id) {
+        return new ArrayList<>();
+    }
+
+    @Override
     public Film getFilmById(Long id) {
         return films.get(id);
     }
@@ -65,6 +70,11 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> getCommonFilms(Long userId, Long friendId) {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<Long> getFilmsIdByParameters(String sqlQuery) {
         return new ArrayList<>();
     }
 }

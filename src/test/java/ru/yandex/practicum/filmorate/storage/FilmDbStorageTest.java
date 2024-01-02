@@ -34,14 +34,15 @@ public class FilmDbStorageTest {
         // Подготавливаем данные для теста
         film = new Film(1L, "Film1", "Description",
                 LocalDate.of(2000, 1, 1),
-                120, new Mpa(1, "G"), new ArrayList<>(), new LinkedHashSet<>());
+                120, new Mpa(1, "G"), new ArrayList<>(),  new ArrayList<>(),
+                new LinkedHashSet<>());
 
         filmDbStorage = new FilmDbStorage(jdbcTemplate);
         filmDbStorage.createFilm(film);
     }
 
     /**
-     * Тест метода getFilmById и createFilm
+     * Тест метода getFilmById
      */
     @Test
     public void testFindFilmById() {
@@ -60,7 +61,8 @@ public class FilmDbStorageTest {
     public void testGetAllFilms() {
         Film secondFilm = new Film(2L, "Film2", "Description",
                 LocalDate.of(2000, 1, 1),
-                120, new Mpa(1, "G"), new ArrayList<>(), new LinkedHashSet<>());
+                120, new Mpa(1, "G"), new ArrayList<>(), new ArrayList<>(),
+                new LinkedHashSet<>());
 
         filmDbStorage.createFilm(secondFilm);
         List<Film> films = filmDbStorage.getAllFilms();

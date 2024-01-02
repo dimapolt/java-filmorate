@@ -8,6 +8,8 @@ import java.util.List;
 public interface FilmStorage {
     List<Film> getAllFilms();
 
+    List<Film> getFilmsByDirector(Long id);
+
     ResponseEntity<Film> createFilm(Film film);
 
     ResponseEntity<Film> updateFilm(Film film);
@@ -17,4 +19,6 @@ public interface FilmStorage {
     Film getFilmById(Long id);
 
     List<Film> getCommonFilms(Long userId, Long friendId);
+
+    List<Long> getFilmsIdByParameters(String sqlQuery);
 }

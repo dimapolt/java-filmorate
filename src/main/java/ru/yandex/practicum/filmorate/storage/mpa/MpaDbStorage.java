@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.mpa;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -14,17 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class MpaDbStorage implements MpaStorage {
     private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    public MpaDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Override
     public List<Mpa> getAllMpa() {
-        String sqlQuery = "SELECT * FROM rating;";
+        String sqlQuery = "SELECT * FROM ratings;";
         List<Mpa> mpa = new ArrayList<>();
 
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlQuery);
@@ -38,11 +34,10 @@ public class MpaDbStorage implements MpaStorage {
 
     @Override
     public Mpa getMpaById(Integer id) {
-        String sqlQuery = "SELECT * FROM rating WHERE rating_id = ?;";
+        String sqlQuery = "SELECT * FROM ratings WHERE rating_id = ?;";
 
         try {
-            Mpa mpa = jdbcTemplate.queryForObject(sqlQuery, this::mapRowToMpa, id);
-            return mpa;
+            return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToMpa, id);
         } catch (EmptyResultDataAccessException e) {
             throw new NoDataFoundException("Рейтинга с таким id ещё нет в базе");
         }
