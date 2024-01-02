@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.NoDataFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -18,6 +17,8 @@ import ru.yandex.practicum.filmorate.utils.FilmRateValidator;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.yandex.practicum.filmorate.utils.QueriesProvider.getQuery;
 
 @Service
 @Slf4j
@@ -147,41 +148,19 @@ public class FilmService {
         if (query == null || by == null) {
             return getFilmsByLikes(0);
         } else {
-            switch (by) {
-                case "director,title":
-                case "title,director":
-                    return searchByTitleAndDirector(query);
-                case "director": return searchByDirector(query);
-                case "title": return searchByTitle(query);
-                default: throw new ValidationException("Передан неверный параметр для поиска!");
-            }
+            return searchFilms(query.toLowerCase(), by);
         }
     }
 
-    private List<Film> searchByDirector(String query) {
-        String sqlQuery = "SELECT f.film_id FROM film f WHERE f.film_id IN " +
-                "(SELECT fd.film_id FROM film_director fd WHERE fd.director_id IN " +
-                "(SELECT d.director_id FROM directors d " +
-                "WHERE d.name LIKE '%" + query + "%'));";
+    private List<Film> searchFilms(String query, String by) {
+        String sqlQuery = getQuery(query, by);
 
         List<Long> filmsId = filmStorage.getFilmsIdByParameters(sqlQuery);
 
-        return filmsId.stream().map(filmStorage::getFilmById).collect(Collectors.toList());
-    }
-
-    private List<Film> searchByTitle(String query) {
-        String sqlQuery = "SELECT * FROM film f WHERE f.name LIKE '%" + query + "%';";
-
-        List<Long> filmsId = filmStorage.getFilmsIdByParameters(sqlQuery);
-
-        return filmsId.stream().map(filmStorage::getFilmById).collect(Collectors.toList());
-    }
-
-    private List<Film> searchByTitleAndDirector(String query) {
-        List<Film> films = searchByTitle(query);
-        films.add((Film) searchByDirector(query));
-
-        return films;
+        return filmsId.stream()
+                .map(filmStorage::getFilmById)
+                .sorted(Comparator.comparing(Film::getId).reversed())
+                .collect(Collectors.toList());
     }
 
 }
