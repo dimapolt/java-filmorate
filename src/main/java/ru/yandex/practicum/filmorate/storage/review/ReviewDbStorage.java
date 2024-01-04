@@ -6,7 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.utils.ReviewNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.ReviewNotFoundException;
 
 import java.util.List;
 import java.util.Objects;
@@ -74,33 +74,26 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public Long deleteReviewById(long id) {
+    public void deleteReviewById(long id) {
         String sqlQuery = "DELETE FROM reviews WHERE review_id = ?";
         int result = jdbcTemplate.update(sqlQuery, id);
         if (result == 0) {
             String message = String.format("Отзыв с id=%d не найден в базе данных! Операция удаления невозможна!", id);
             throw new ReviewNotFoundException(message);
         }
-        return id;
     }
 
     @Override
-    public void addLikeForFilmReview(long reviewId, long userId) {
-
+    public void addLikeOrDislikeForFilmReview(long reviewId, long userId, boolean isLike) {
+        String sqlQuery = "INSERT INTO reviews_likes (review_id, user_id, isLike) " +
+                "VALUES (?, ?, ?)";
+        jdbcTemplate.update(sqlQuery, reviewId, userId, isLike);
     }
 
     @Override
-    public void addDislikeForFilmReview(long reviewId, long userId) {
-
-    }
-
-    @Override
-    public void deleteLikeForFilmReview(long reviewId, long userId) {
-
-    }
-
-    @Override
-    public void deleteDislikeForFilmReview(long reviewId, long userId) {
-
+    public void deleteLikeOrDislikeForFilmReview(long reviewId, long userId) {
+        String sqlQuery = "DELETE FROM reviews_likes " +
+                "WHERE review_id = ? AND user_id = ?";
+        jdbcTemplate.update(sqlQuery, reviewId, userId);
     }
 }
