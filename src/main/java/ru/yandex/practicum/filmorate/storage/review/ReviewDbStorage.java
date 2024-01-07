@@ -96,4 +96,16 @@ public class ReviewDbStorage implements ReviewStorage {
                 "WHERE review_id = ? AND user_id = ?";
         jdbcTemplate.update(sqlQuery, reviewId, userId);
     }
+
+    public void increaseUsefulForFilmReview(long reviewId) {
+        String sqlQuery = "UPDATE reviews SET useful = useful + 1 " +
+                "WHERE review_id = ?";
+        jdbcTemplate.update(sqlQuery, reviewId);
+    }
+
+    public void decreaseUsefulForFilmReview(long reviewId) {
+        String sqlQuery = "UPDATE reviews SET useful = useful - 1 " +
+                "WHERE review_id = ?";
+        jdbcTemplate.update(sqlQuery, reviewId);
+    }
 }
