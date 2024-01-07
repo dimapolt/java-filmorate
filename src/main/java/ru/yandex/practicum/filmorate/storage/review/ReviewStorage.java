@@ -18,4 +18,8 @@ public interface ReviewStorage {
     void addLikeOrDislikeForFilmReview(long reviewId, long userId, boolean isLike);
 
     void deleteLikeOrDislikeForFilmReview(long reviewId, long userId);
+
+    void increaseUsefulForFilmReview(long reviewId);
+
+    void decreaseUsefulForFilmReview(long reviewId);
 }
