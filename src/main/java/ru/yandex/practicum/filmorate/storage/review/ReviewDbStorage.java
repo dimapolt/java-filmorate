@@ -74,6 +74,15 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
+    public List<Review> getSomeCountReviewsByFilmId(long filmId, int count) {
+        String sqlQuery = "SELECT * FROM reviews " +
+                "WHERE film_id = ? " +
+                "ORDER BY useful DESC " +
+                "LIMIT ?";
+        return jdbcTemplate.query(sqlQuery, new ReviewResultSetExtractor(), filmId, count);
+    }
+
+    @Override
     public void deleteReviewById(long id) {
         String sqlQuery = "DELETE FROM reviews WHERE review_id = ?";
         int result = jdbcTemplate.update(sqlQuery, id);
