@@ -13,6 +13,8 @@ public interface ReviewStorage {
 
     Review getReviewById(long id);
 
+    List<Review> getSomeCountReviewsByFilmId(long filmId, int count);
+
     void deleteReviewById(long id);
 
     void addLikeOrDislikeForFilmReview(long reviewId, long userId, boolean isLike);
