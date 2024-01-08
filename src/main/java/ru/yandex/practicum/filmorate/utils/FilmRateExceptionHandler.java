@@ -5,8 +5,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.yandex.practicum.filmorate.exceptions.NoDataFoundException;
+import ru.yandex.practicum.filmorate.exceptions.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+
+import java.util.Map;
 
 /**
  * Обработчик исключений
@@ -30,4 +34,10 @@ public class FilmRateExceptionHandler {
                 HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    public Map<String, String> handleReviewNotFoundException(final ReviewNotFoundException exc) {
+        log.info("Отловлена ошибка: " + exc.getMessage());
+        return Map.of("Error", exc.getMessage());
+    }
 }
