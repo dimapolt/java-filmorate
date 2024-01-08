@@ -5,13 +5,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 
 @Getter
 @Setter
 @EqualsAndHashCode
 public class Review {
-    private long reviewId;
+    private Long reviewId;
 
     @NotNull
     private String content;
@@ -19,15 +18,15 @@ public class Review {
     @NotNull
     private Boolean isPositive;
 
-    @Positive
-    private long userId;
+    @NotNull
+    private Long userId;
 
-    @Positive
-    private long filmId;
-    private int useful;
+    @NotNull
+    private Long filmId;
+    private Integer useful;
 
-    public Review(long reviewIdArg, String contentArg, boolean isPositiveArg,
-                  long filmIdArg, long userIdArg, int usefulArg) {
+    public Review(Long reviewIdArg, String contentArg, Boolean isPositiveArg,
+                  Long filmIdArg, Long userIdArg, Integer usefulArg) {
         reviewId = reviewIdArg;
         content = contentArg;
         isPositive = isPositiveArg;
