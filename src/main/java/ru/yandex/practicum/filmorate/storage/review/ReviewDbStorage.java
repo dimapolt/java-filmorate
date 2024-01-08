@@ -57,7 +57,8 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public List<Review> getAllReviews() {
-        String sqlQuery = "SELECT * FROM reviews";
+        String sqlQuery = "SELECT * FROM reviews " +
+                "ORDER BY useful DESC ";
         return jdbcTemplate.query(sqlQuery, new ReviewResultSetExtractor());
     }
 
