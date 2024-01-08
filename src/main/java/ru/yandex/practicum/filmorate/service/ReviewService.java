@@ -10,6 +10,8 @@ import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.exceptions.ReviewNotFoundException;
 
+import java.util.List;
+
 @Service
 public class ReviewService {
     private final FilmStorage filmStorage;
@@ -91,6 +93,19 @@ public class ReviewService {
             throw new ReviewNotFoundException(message);
         } catch (NoDataFoundException exc) {
             String message = String.format("Пользователь с id=%d не найден в базе данных!", userId);
+            throw new NoDataFoundException(message);
+        }
+    }
+
+    public List<Review> getAllReviewsOrSomeCountReviewsByFilmId(Long filmId, int count) {
+        try {
+            if (filmId == null) {
+                return reviewStorage.getAllReviews();
+            }
+            filmStorage.getFilmById(filmId); // Проверяем наличие фильма в БД
+            return reviewStorage.getSomeCountReviewsByFilmId(filmId, count);
+        } catch (NoDataFoundException exc) {
+            String message = String.format("Фильм с id=%d не найден в базе данных!", filmId);
             throw new NoDataFoundException(message);
         }
     }
