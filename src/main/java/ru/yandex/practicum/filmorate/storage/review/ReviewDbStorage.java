@@ -35,8 +35,8 @@ public class ReviewDbStorage implements ReviewStorage {
     public Review updateReview(Review review) {
         String sqlQuery = "UPDATE reviews SET " +
                 "content = ?, " +
-                "isPositive = ? " +
-                "film_id = ? " +
+                "isPositive = ?, " +
+                "film_id = ?, " +
                 "user_id = ? " +
                 "WHERE review_id = ?";
         String content = review.getContent();
