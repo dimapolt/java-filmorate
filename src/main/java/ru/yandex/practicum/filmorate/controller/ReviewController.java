@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/reviews")
@@ -44,6 +45,15 @@ public class ReviewController {
         final Review review = reviewService.getReviewById(id);
         log.info("На запрос GET /reviews/{} отправлен ответ с телом: {}", id, review);
         return review;
+    }
+
+    @GetMapping
+    public List<Review> getTopReviewsByFilmIdOrAllReviews(@RequestParam(required = false) Long filmId,
+                            @RequestParam(defaultValue = "10") int count) {
+        log.info("Пришел GET /reviews?filmId={}&count={} запрос", filmId, count);
+        final List<Review> reviews = reviewService.getAllReviewsOrSomeCountReviewsByFilmId(filmId, count);
+        log.info("На запрос GET /reviews?filmId={}&count={} отправлен ответ с телом: {}", filmId, count, reviews);
+        return reviews;
     }
 
     @DeleteMapping("/{id}")
