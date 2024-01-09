@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import java.util.List;
 
 @Service
 public class ReviewService {
+    private static final Logger log = LoggerFactory.getLogger(ReviewService.class);
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
     private final ReviewStorage reviewStorage;
@@ -36,20 +39,41 @@ public class ReviewService {
     }
 
     public Review updateReview(Review review) {
-
-        Review updatedReview = reviewStorage.updateReview(review);
-        // добавляем обновление отзыва в ленте событий
-        return updatedReview;
+        try {
+            checkReviewExist(review);
+            Review updatedReview = reviewStorage.updateReview(review);
+            // добавляем обновление отзыва в ленте событий
+            return updatedReview;
+        } catch (ReviewNotFoundException exc) {
+            log.info("Отзыв с id={} не найден в базе данных! " +
+                    "Невозможно выполнить метод updateReview", review.getReviewId());
+            String message = String.format("Отзыв с id=%d не найден в базе данных! Невозможно выполнить операцию " +
+                    "обновления", review.getReviewId());
+            throw new ReviewNotFoundException(message);
+        }
     }
 
     public Review getReviewById(long id) {
-        return reviewStorage.getReviewById(id); // метод выбрасывает NoDataException если отзыв не найден по id
+        try {
+            return reviewStorage.getReviewById(id);
+        } catch (ReviewNotFoundException exc) {
+            log.info("Отзыв с id={} не найден в базе данных! Невозможно выполнить метод getReviewById", id);
+            String message = String.format("Отзыв с id=%d не найден в базе данных!", id);
+            throw new ReviewNotFoundException(message);
+        }
     }
 
     public void deleteReviewById(long id) {
-        Review deletedReview = reviewStorage.getReviewById(id); // получаем отзыв на фильм из БД перед удалением
-        reviewStorage.deleteReviewById(id); // удаляем отзыв на фильм из БД
-        // добавляем удаление отзыва в ленту событий
+        try {
+            Review deletedReview = reviewStorage.getReviewById(id); // получаем отзыв на фильм из БД перед удалением
+            reviewStorage.deleteReviewById(id); // удаляем отзыв на фильм из БД
+            // добавляем удаление отзыва в ленту событий
+        } catch (ReviewNotFoundException exc) {
+            log.info("Отзыв с id={} не найден в базе данных! Невозможно выполнить метод deleteReviewById", id);
+            String message = String.format("Отзыв с id=%d не найден в базе данных! Невозможно выполнить операцию " +
+                    "удаления", id);
+            throw new ReviewNotFoundException(message);
+        }
     }
 
     public void addLikeOrDislikeForFilmReview(long reviewId, long userId, boolean isLike) {
@@ -71,9 +95,13 @@ public class ReviewService {
                 reviewStorage.decreaseUsefulForFilmReview(reviewId);
             }
         } catch (ReviewNotFoundException exc) {
+            log.info("Отзыв с id={} не найден в базе данных! " +
+                    "Невозможно выполнить метод addLikeOrDislikeForFilmReview", reviewId);
             String message = String.format("Отзыв с id=%d не найден в базе данных!", reviewId);
             throw new ReviewNotFoundException(message);
         } catch (NoDataFoundException exc) {
+            log.info("Пользователь с id={} не найден в базе данных! " +
+                    "Невозможно выполнить метод addLikeOrDislikeForFilmReview", userId);
             String message = String.format("Пользователь с id=%d не найден в базе данных!", userId);
             throw new NoDataFoundException(message);
         }
@@ -88,9 +116,13 @@ public class ReviewService {
             // удаляем лайк/дизлайк у отзыва
             reviewStorage.deleteLikeOrDislikeForFilmReview(reviewId, userId);
         } catch (ReviewNotFoundException exc) {
+            log.info("Отзыв с id={} не найден в базе данных! " +
+                    "Невозможно выполнить метод deleteLikeOrDislikeForFilmReview", reviewId);
             String message = String.format("Отзыв с id=%d не найден в базе данных!", reviewId);
             throw new ReviewNotFoundException(message);
         } catch (NoDataFoundException exc) {
+            log.info("Пользователь с id={} не найден в базе данных! " +
+                    "Невозможно выполнить метод deleteLikeOrDislikeForFilmReview", userId);
             String message = String.format("Пользователь с id=%d не найден в базе данных!", userId);
             throw new NoDataFoundException(message);
         }
@@ -104,6 +136,8 @@ public class ReviewService {
             filmStorage.getFilmById(filmId); // Проверяем наличие фильма в БД
             return reviewStorage.getSomeCountReviewsByFilmId(filmId, count);
         } catch (NoDataFoundException exc) {
+            log.info("Фильм с id={} не найден в базе данных! " +
+                    "Невозможно выполнить метод getAllReviewsOrSomeCountReviewsByFilmId", filmId);
             String message = String.format("Фильм с id=%d не найден в базе данных!", filmId);
             throw new NoDataFoundException(message);
         }
@@ -117,5 +151,10 @@ public class ReviewService {
     private void checkUserExist(Review review) {
         long userId = review.getUserId();
         userStorage.getUserById(userId); // метод выбрасывает NoDataException если пользователь не найден по id
+    }
+
+    private void checkReviewExist(Review review) {
+        long reviewId = review.getReviewId();
+        reviewStorage.getReviewById(reviewId); // метод выбрасывает ReviewNotFoundException
     }
 }
