@@ -57,7 +57,10 @@ public class ReviewDbStorage implements ReviewStorage {
                     review.getReviewId());
             throw new ReviewNotFoundException(message);
         }
-        return review;
+
+        // Здесь надо достать ревью из базы и вернуть его с правильными id пользователя и фильма,
+        // а не с теми с которыми пришёл
+        return getReviewById(reviewId);
     }
 
     @Override

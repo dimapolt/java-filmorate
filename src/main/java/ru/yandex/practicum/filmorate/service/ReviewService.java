@@ -36,8 +36,11 @@ public class ReviewService {
     }
 
     public Review updateReview(Review review) {
-        checkFilmExist(review);
-        checkUserExist(review);
+
+        // Две нижние проверки игнорируем, id фильма и пользователя для отзыва останется неизменным
+
+        //checkFilmExist(review);
+        //checkUserExist(review);
         Review updatedReview = reviewStorage.updateReview(review);
         // добавляем обновление отзыва в ленте событий
         return updatedReview;
