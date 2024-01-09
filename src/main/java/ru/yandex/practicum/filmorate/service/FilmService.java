@@ -5,12 +5,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exceptions.NoDataFoundException;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.utils.FilmExtraValidator;
 import ru.yandex.practicum.filmorate.utils.FilmRateValidator;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -18,13 +22,16 @@ import java.util.List;
 public class FilmService {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
+    private final FilmExtraValidator filmExtraValidator;
 
 
     @Autowired
     public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
-                       @Qualifier("userDbStorage") UserStorage userStorage) {
+                       @Qualifier("userDbStorage") UserStorage userStorage,
+                       FilmExtraValidator filmExtraValidator) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+        this.filmExtraValidator = filmExtraValidator;
     }
 
     public List<Film> getAllFilms() {
@@ -38,11 +45,18 @@ public class FilmService {
         return film;
     }
 
+    /**
+     * Перед созданием или обновлением делаем проверку на наличие
+     * характеристик (жанры, рейтинг, режисёры) в базе данных через
+     * объект класса <b>FilmExtraValidator<b/>
+     */
     public ResponseEntity<Film> createFilm(Film film) {
+        filmExtraValidator.checkFilmCharacteristic(film);
         return filmStorage.createFilm(film);
     }
 
     public ResponseEntity<Film> updateFilm(Film film) {
+        filmExtraValidator.checkFilmCharacteristic(film);
         return filmStorage.updateFilm(film);
     }
 
@@ -88,6 +102,36 @@ public class FilmService {
         }
     }
 
+    public List<Film> getFilmsByDirector(Long id, String sortBy) {
+        if (!(sortBy.equals("year") || sortBy.equals("likes"))) {
+            throw new ValidationException("Неверное условие для сортировки!");
+        }
+
+        List<Film> films = filmStorage.getFilmsByDirector(id);
+
+        if (films.size() == 0) {
+            String message = "У данного режиссёра отсутствуют фильмы либо режиссёра нет в базе";
+            log.warn(message);
+            throw new NoDataFoundException(message);
+        }
+
+        if (sortBy.equals("year")) {
+            films.sort((f1, f2) -> {
+                if (f1.getReleaseDate().isAfter(f2.getReleaseDate())) {
+                    return 1;
+                } else if ((f1.getReleaseDate().isBefore(f2.getReleaseDate()))) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            });
+        } else { // если 'likes'
+            films.sort(Comparator.comparingInt(Film::getLikesCount).reversed());
+        }
+
+        return films;
+    }
+
     public List<Film> getCommonFilms(Long userId, Long friendId) {
         List<Film> films = filmStorage.getCommonFilms(userId, friendId);
 
@@ -95,4 +139,5 @@ public class FilmService {
 
         return films;
     }
+
 }
