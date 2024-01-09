@@ -252,7 +252,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private void setLikes(Long id, Set<Long> likes) {
-        jdbcTemplate.update("DELETE FROM likes WHERE user_id = ?", id);
+        jdbcTemplate.update("DELETE FROM likes WHERE film_id = ?", id);
         if (likes.size() > 0) {
             for (Long like : likes) {
                 String sqlQuery = "INSERT INTO likes (film_id, user_id) " +
