@@ -30,26 +30,17 @@ public class ReviewDbStorage implements ReviewStorage {
         review.setReviewId(id);
         return review;
     }
-    /* Проблема с постман тестом для метода updateReview. Если убрать комментарии, то будет выполняться базовая версия
-       метода updateReview и количество проваленных тестов будет 35.
 
-       Если оставить закоментированные строки без изменения, то будет выполняться обновлеенная версия метода
-       updateReview и количество проваленных тестов будет 2.
-     */
     @Override
     public Review updateReview(Review review) {
         String sqlQuery = "UPDATE reviews SET " +
                 "content = ?, " +
-                "isPositive = ? " + // нужно будет поставить запятую после знака ?, если будут убраны все комментарии
-                //"film_id = ?, " +
-                //"user_id = ? " +
+                "isPositive = ? " +
                 "WHERE review_id = ?";
         String content = review.getContent();
         boolean isPositive = review.getIsPositive();
-        //long filmId = review.getFilmId();
-        //long userId = review.getUserId();
         long reviewId = review.getReviewId();
-        Object[] args = {content, isPositive, /*filmId, userId,*/ reviewId};
+        Object[] args = {content, isPositive, reviewId};
 
         int countUpdatedRows = jdbcTemplate.update(sqlQuery, args);
         if (countUpdatedRows == 0) {
@@ -57,7 +48,6 @@ public class ReviewDbStorage implements ReviewStorage {
                     review.getReviewId());
             throw new ReviewNotFoundException(message);
         }
-
         // Здесь надо достать ревью из базы и вернуть его с правильными id пользователя и фильма,
         // а не с теми с которыми пришёл
         return getReviewById(reviewId);
