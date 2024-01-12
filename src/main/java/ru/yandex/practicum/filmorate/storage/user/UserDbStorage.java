@@ -119,7 +119,6 @@ public class UserDbStorage implements UserStorage {
             if (!otherUser.getId().equals(id)) {
                 int similarityIndex = getSimilarity(currentUser, otherUser); //Найти пользователей с максимальным количеством пересечения по лайкам
                 List<Film> otherUserLikedFilms = getLikedFilms(otherUser);
-                System.out.println("user_" + otherUser.getId() + ": " + otherUserLikedFilms);
 
                 for (Film likedFilm : otherUserLikedFilms) {
                     if (!currentUserLikedFilms.contains(likedFilm)) { //Определить фильмы, которые один пролайкал, а другой нет.
