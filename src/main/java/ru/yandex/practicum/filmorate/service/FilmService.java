@@ -16,7 +16,6 @@ import ru.yandex.practicum.filmorate.utils.FilmRateValidator;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.utils.QueriesProvider.getQuery;
 
@@ -144,23 +143,14 @@ public class FilmService {
     }
 
     public List<Film> getFilmsByParameters(String query, String by) {
-
         if (query == null || by == null) {
             return getFilmsByLikes(0);
         } else {
-            return searchFilms(query.toLowerCase(), by);
+            String sqlQuery = getQuery(query.toLowerCase(), by);
+            List<Film> films = filmStorage.getFilmsIdByParameters(sqlQuery);
+            films.sort(Comparator.comparing(Film::getId).reversed());
+            return films;
         }
-    }
-
-    private List<Film> searchFilms(String query, String by) {
-        String sqlQuery = getQuery(query, by);
-
-        List<Long> filmsId = filmStorage.getFilmsIdByParameters(sqlQuery);
-
-        return filmsId.stream()
-                .map(filmStorage::getFilmById)
-                .sorted(Comparator.comparing(Film::getId).reversed())
-                .collect(Collectors.toList());
     }
 
 }

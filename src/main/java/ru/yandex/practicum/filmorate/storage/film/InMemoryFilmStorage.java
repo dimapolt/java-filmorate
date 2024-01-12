@@ -74,7 +74,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Long> getFilmsIdByParameters(String sqlQuery) {
+    public List<Film> getFilmsIdByParameters(String sqlQuery) {
         return new ArrayList<>();
     }
 }
