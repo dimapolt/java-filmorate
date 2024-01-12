@@ -9,12 +9,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.NoDataFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.utils.FilmRateValidator;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -102,6 +105,55 @@ public class UserDbStorage implements UserStorage {
     public boolean removeFriend(Long id, Long friendId) {
         String sqlQuery = "DELETE FROM friendship WHERE user_id = ? AND friend_id = ?";
         return jdbcTemplate.update(sqlQuery, id, friendId) > 0;
+    }
+
+    @Override
+    public List<Film> getRecommendedFilms(Long id) {
+        User currentUser = getUserById(id);
+        List<Film> currentUserLikedFilms = getLikedFilms(currentUser);
+        Map<Long, User> users = getAllUsers().stream()
+                .collect(Collectors.toMap(User::getId, user -> user));
+        Map<Film, Integer> scores = new HashMap<>();
+
+        for (User otherUser : users.values()) {
+            if (!otherUser.getId().equals(id)) {
+                int similarityIndex = getSimilarity(currentUser, otherUser); //Найти пользователей с максимальным количеством пересечения по лайкам
+                List<Film> otherUserLikedFilms = getLikedFilms(otherUser);
+                System.out.println("user_" + otherUser.getId() + ": " + otherUserLikedFilms);
+
+                for (Film likedFilm : otherUserLikedFilms) {
+                    if (!currentUserLikedFilms.contains(likedFilm)) { //Определить фильмы, которые один пролайкал, а другой нет.
+                        scores.merge(likedFilm, similarityIndex, Integer::sum); //третий параметр метода merge: функция переназначения, пересчитывает value
+                    }
+                }
+            }
+        }
+
+        List<Film> recommendedFilms = new ArrayList<>(scores.keySet());
+        recommendedFilms.sort(Comparator.comparingInt(key -> scores.get(key)).reversed()); //Рекомендовать фильмы, которым поставил лайк пользователь с похожими вкусами, а тот, для кого составляется рекомендация, ещё не поставил.
+
+        return recommendedFilms;
+    }
+
+    private int getSimilarity(User currentUser, User otherUser) {
+        Set<Film> intersection = new HashSet<>();
+        intersection.addAll(getLikedFilms(currentUser));
+        intersection.retainAll(getLikedFilms(otherUser));
+
+        Set<Film> united = new HashSet<>();
+        united.addAll(getLikedFilms(currentUser));
+        united.addAll(getLikedFilms(otherUser));
+
+        if (united.isEmpty()) {
+            return 0;
+        } else {
+            return (int) ((double) intersection.size() / united.size() * 100); //Коэффициент Жаккара
+        }
+    }
+
+    private List<Film> getLikedFilms(User user) {
+        FilmDbStorage filmDbStorage = new FilmDbStorage(jdbcTemplate);
+        return filmDbStorage.getLikedFilms(user.getId());
     }
 
     private User mapRowToUser(ResultSet resultSet, int i) throws SQLException {

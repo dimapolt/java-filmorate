@@ -3,10 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Builder
 @Getter
@@ -46,6 +43,19 @@ public class Film {
 
     public int getLikesCount() {
         return likes.size();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Film film = (Film) o;
+        return Objects.equals(id, film.id) && Objects.equals(name, film.name) && Objects.equals(description, film.description) && Objects.equals(releaseDate, film.releaseDate) && Objects.equals(duration, film.duration);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description, releaseDate, duration);
     }
 
 }

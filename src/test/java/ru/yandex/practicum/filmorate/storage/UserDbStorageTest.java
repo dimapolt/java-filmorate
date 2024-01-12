@@ -1,19 +1,21 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.RequiredArgsConstructor;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -99,6 +101,55 @@ public class UserDbStorageTest {
 
         userFromBd = userStorage.getUserById(2L);
         assertEquals(0, userFromBd.getFriendsId().size()); // Проверяем, что список друзей пуст
+    }
+
+    /**
+     * getRecommendedFilms
+     */
+    @Test
+    public void testGetRecommendedFilmsByUserId() {
+        FilmDbStorage filmDbStorage = new FilmDbStorage(jdbcTemplate);
+        User secondUser = new User(2L, "user@email.ru", "ivanov88", "Ivan Ivanov",
+                LocalDate.of(1988, 10, 1), new HashSet<>());
+        userStorage.createUser(secondUser);
+        User thirdUser = new User(3L, "user@email.ru", "ivanov88", "Ivan Ivanov",
+                LocalDate.of(1988, 10, 1), new HashSet<>());
+        userStorage.createUser(thirdUser);
+
+        Film filmOne = new Film(1L, "Film1", "Description",
+                LocalDate.of(2000, 1, 1),
+                120, new Mpa(1, "G"), new ArrayList<>(),  new ArrayList<>(),
+                new LinkedHashSet<>());
+        filmDbStorage.createFilm(filmOne);
+        Film filmTwo = new Film(2L, "Film1", "Description",
+                LocalDate.of(2000, 1, 1),
+                120, new Mpa(1, "G"), new ArrayList<>(),  new ArrayList<>(),
+                new LinkedHashSet<>());
+        filmDbStorage.createFilm(filmTwo);
+        Film filmThree = new Film(3L, "Film1", "Description",
+                LocalDate.of(2000, 1, 1),
+                120, new Mpa(1, "G"), new ArrayList<>(),  new ArrayList<>(),
+                new LinkedHashSet<>());
+        filmDbStorage.createFilm(filmThree);
+
+        filmOne.setLike(user.getId());
+        filmTwo.setLike(secondUser.getId());
+        filmThree.setLike(secondUser.getId());
+        filmThree.setLike(thirdUser.getId());
+
+        filmDbStorage.updateFilm(filmOne);
+        filmDbStorage.updateFilm(filmTwo);
+        filmDbStorage.updateFilm(filmThree);
+
+        List<Film> recommendedFilms = userStorage.getRecommendedFilms(thirdUser.getId());
+        List<Film> expectedResult = new ArrayList<>();
+        expectedResult.add(filmTwo);
+        expectedResult.add(filmOne);
+
+        Assertions.assertThat(recommendedFilms)
+                .isNotNull()
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResult);
     }
 
 }
