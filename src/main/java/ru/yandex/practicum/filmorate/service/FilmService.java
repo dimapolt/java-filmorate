@@ -147,7 +147,7 @@ public class FilmService {
             return getFilmsByLikes(0);
         } else {
             String sqlQuery = getQuery(query.toLowerCase(), by);
-            List<Film> films = filmStorage.getFilmsIdByParameters(sqlQuery);
+            List<Film> films = filmStorage.getFilmsByParameters(sqlQuery);
             films.sort(Comparator.comparing(Film::getId).reversed());
             return films;
         }
