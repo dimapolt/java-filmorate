@@ -10,6 +10,8 @@ public interface FilmStorage {
 
     List<Film> getFilmsByDirector(Long id);
 
+    List<Film> getFilmsByUser(Long id);
+
     ResponseEntity<Film> createFilm(Film film);
 
     ResponseEntity<Film> updateFilm(Film film);

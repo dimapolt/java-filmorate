@@ -12,12 +12,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users/{id}/feed")
-public class EventServiceController {
+public class EventController {
 
     private final EventService eventService;
 
     @Autowired
-    public EventServiceController(EventService eventService) {
+    public EventController(EventService eventService) {
         this.eventService = eventService;
     }
 
@@ -25,6 +25,5 @@ public class EventServiceController {
     public List<Event> getFeedByUserId(@PathVariable("id") Long userId) {
         return eventService.getFeedByUserId(userId);
     }
-
 
 }

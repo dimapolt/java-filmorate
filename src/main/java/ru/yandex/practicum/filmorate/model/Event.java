@@ -18,7 +18,6 @@ public class Event {
     private EventOperationType operation;
     private long entityId;
 
-
     public enum EntityType {
         LIKE, REVIEW, FRIEND
     }
@@ -36,6 +35,6 @@ public class Event {
         values.put("eventOperationType", operation);
         values.put("entity_Id", entityId);
         return values;
-
     }
+
 }

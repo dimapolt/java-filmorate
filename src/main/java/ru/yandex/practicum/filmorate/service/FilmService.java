@@ -20,8 +20,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.yandex.practicum.filmorate.utils.QueriesProvider.getQuery;
-
 @Service
 @Slf4j
 public class FilmService {
@@ -69,8 +67,7 @@ public class FilmService {
 
     public String deleteFilm(Long filmId) {
         filmStorage.deleteFilm(filmId);
-        //eventStorage.deleteByEntityId(Event.EntityType.LIKE, filmId);
-        //eventStorage.deleteByEntityId(Event.EntityType.REVIEW, filmId);
+        //eventStorage.deleteByEntityId(Event.EntityType.LIKE, filmId); #отключено:действие не удаляет запись ленты
 
         return "Фильм с id=" + filmId + " успешно удален!";
     }
@@ -119,7 +116,7 @@ public class FilmService {
                     .filter(film -> film.getReleaseDate().getYear() == year)
                     .collect(Collectors.toList());
 
-        if (films.size() > count && count != 0) {
+        if (films.size() > count) {
             return films.subList(0, count);
         } else {
             return films;
@@ -162,17 +159,6 @@ public class FilmService {
         films.sort((f1, f2) -> f2.getLikesCount() - f1.getLikesCount());
 
         return films;
-    }
-
-    public List<Film> getFilmsByParameters(String query, String by) {
-        if (query == null || by == null) {
-            return getFilmsByLikes(0, null, null);
-        } else {
-            String sqlQuery = getQuery(query.toLowerCase(), by);
-            List<Film> films = filmStorage.getFilmsByParameters(sqlQuery);
-            films.sort(Comparator.comparing(Film::getId).reversed());
-            return films;
-        }
     }
 
 }

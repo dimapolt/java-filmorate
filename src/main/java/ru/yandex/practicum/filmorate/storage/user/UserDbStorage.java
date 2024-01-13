@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.exceptions.NoDataFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.utils.FilmRateValidator;
 
 import java.sql.ResultSet;
@@ -117,19 +118,19 @@ public class UserDbStorage implements UserStorage {
 
         for (User otherUser : users.values()) {
             if (!otherUser.getId().equals(id)) {
-                int similarityIndex = getSimilarity(currentUser, otherUser); //Найти пользователей с максимальным количеством пересечения по лайкам
+                int similarityIndex = getSimilarity(currentUser, otherUser);
                 List<Film> otherUserLikedFilms = getLikedFilms(otherUser);
 
                 for (Film likedFilm : otherUserLikedFilms) {
-                    if (!currentUserLikedFilms.contains(likedFilm)) { //Определить фильмы, которые один пролайкал, а другой нет.
-                        scores.merge(likedFilm, similarityIndex, Integer::sum); //третий параметр метода merge: функция переназначения, пересчитывает value
+                    if (!currentUserLikedFilms.contains(likedFilm)) {
+                        scores.merge(likedFilm, similarityIndex, Integer::sum);
                     }
                 }
             }
         }
 
         List<Film> recommendedFilms = new ArrayList<>(scores.keySet());
-        recommendedFilms.sort(Comparator.comparingInt(key -> scores.get(key)).reversed()); //Рекомендовать фильмы, которым поставил лайк пользователь с похожими вкусами, а тот, для кого составляется рекомендация, ещё не поставил.
+        recommendedFilms.sort(Comparator.comparingInt(key -> scores.get(key)).reversed());
 
         return recommendedFilms;
     }
@@ -151,8 +152,8 @@ public class UserDbStorage implements UserStorage {
     }
 
     private List<Film> getLikedFilms(User user) {
-        FilmDbStorage filmDbStorage = new FilmDbStorage(jdbcTemplate);
-        return filmDbStorage.getLikedFilms(user.getId());
+        FilmStorage filmStorage = new FilmDbStorage(jdbcTemplate);
+        return filmStorage.getFilmsByUser(user.getId());
     }
 
     private User mapRowToUser(ResultSet resultSet, int i) throws SQLException {

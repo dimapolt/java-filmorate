@@ -28,7 +28,6 @@ public class EventDbStorage implements EventStorage {
         this.userStorage = userStorage;
     }
 
-
     @Override
     public List<Event> getAll() {
         String sqlQuery = "SELECT event_Id, eventTimestamp, eventType, eventOperationType, entity_Id " +
@@ -70,9 +69,9 @@ public class EventDbStorage implements EventStorage {
     @Override
     public void deleteByEntityId(Event.EntityType entityType, long entityId) {
         String sqlQuery =
-                "DELETE FROM EVENTS WHERE eventType = ? AND ENTITY_ID = ?";
+                "DELETE FROM EVENTS WHERE EVENTTYPE =? AND ENTITY_ID =?";
 
-        jdbcTemplate.update(sqlQuery, entityType.toString(), entityId);
+        jdbcTemplate.update(sqlQuery, entityType, entityId);
     }
 
     @Override
@@ -115,8 +114,8 @@ public class EventDbStorage implements EventStorage {
                     .operation(Event.EventOperationType.valueOf(sqlRowSet.getString("eventOperationType")))
                     .build()
             );
-
         }
+
         return userFeedList;
     }
 
