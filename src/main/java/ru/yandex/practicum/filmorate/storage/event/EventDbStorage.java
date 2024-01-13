@@ -70,9 +70,9 @@ public class EventDbStorage implements EventStorage {
     @Override
     public void deleteByEntityId(Event.EntityType entityType, long entityId) {
         String sqlQuery =
-                "DELETE FROM EVENTS WHERE ENTITYTYPE =? AND ENTITY_ID =?";
+                "DELETE FROM EVENTS WHERE eventType = ? AND ENTITY_ID = ?";
 
-        jdbcTemplate.update(sqlQuery, entityType, entityId);
+        jdbcTemplate.update(sqlQuery, entityType.toString(), entityId);
     }
 
     @Override
