@@ -7,7 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.NoDataFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.event.EventStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.utils.FilmRateValidator;
 
@@ -19,10 +21,13 @@ import java.util.Optional;
 @Slf4j
 public class UserService {
     private final UserStorage userStorage;
+    private final EventStorage eventStorage;
 
     @Autowired
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
+                       @Qualifier("eventDbStorage") EventStorage eventStorage) {
         this.userStorage = userStorage;
+        this.eventStorage = eventStorage;
     }
 
     public ResponseEntity<User> createUser(User user) {
@@ -57,6 +62,7 @@ public class UserService {
 
         user.addFriend(friendId);
         userStorage.updateUser(user);
+        eventStorage.createEvent(Event.EntityType.FRIEND, friendId, Event.EventOperationType.ADD, userId);
 
         String message = "Пользователь с id=" + friendId + " добавлен в друзья";
         log.info(message);
@@ -66,6 +72,7 @@ public class UserService {
     public String removeFriend(Long userId, Long friendId) {
         getUserIfExist(userId);
         userStorage.removeFriend(userId, friendId);
+        eventStorage.createEvent(Event.EntityType.FRIEND, friendId, Event.EventOperationType.REMOVE, userId);
 
         String message = "Пользователь с id=" + friendId + " удалён из друзей";
         log.info(message);
