@@ -7,8 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.NoDataFoundException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.event.EventStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.utils.FilmExtraValidator;
@@ -25,13 +27,15 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final FilmExtraValidator filmExtraValidator;
 
+    private final EventStorage eventStorage;
 
     @Autowired
     public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
                        @Qualifier("userDbStorage") UserStorage userStorage,
-                       FilmExtraValidator filmExtraValidator) {
+                       FilmExtraValidator filmExtraValidator, @Qualifier("eventDbStorage") EventStorage eventStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+        this.eventStorage = eventStorage;
         this.filmExtraValidator = filmExtraValidator;
     }
 
@@ -63,6 +67,7 @@ public class FilmService {
 
     public String deleteFilm(Long filmId) {
         filmStorage.deleteFilm(filmId);
+        eventStorage.deleteByEntityId(Event.EntityType.LIKE, filmId);
 
         return "Фильм с id=" + filmId + " успешно удален!";
     }
@@ -75,6 +80,8 @@ public class FilmService {
         film.setLike(userId);
 
         filmStorage.updateFilm(film);
+        eventStorage.createEvent(Event.EntityType.LIKE, filmId,
+                Event.EventOperationType.ADD, userId);
 
         return "Пользователь " + userId + " поставил оценку фильму " + filmId;
     }
@@ -87,6 +94,8 @@ public class FilmService {
         film.unSetLike(userId);
 
         filmStorage.updateFilm(film);
+        eventStorage.createEvent(Event.EntityType.LIKE, filmId,
+                Event.EventOperationType.REMOVE, userId);
 
         return "Удалена оценка от " + userId + " фильму " + filmId;
     }

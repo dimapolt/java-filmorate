@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.NoDataFoundException;
+import ru.yandex.practicum.filmorate.exceptions.ReviewNotFoundException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.storage.event.EventStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-import ru.yandex.practicum.filmorate.exceptions.ReviewNotFoundException;
 
 import java.util.List;
 
@@ -19,15 +21,19 @@ public class ReviewService {
     private static final Logger log = LoggerFactory.getLogger(ReviewService.class);
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final EventStorage eventStorage;
     private final ReviewStorage reviewStorage;
+
 
     @Autowired
     public ReviewService(@Qualifier("filmDbStorage") FilmStorage filmStorageArg,
                          @Qualifier("userDbStorage") UserStorage userStorageArg,
-                         ReviewStorage reviewStorageArg) {
+                         ReviewStorage reviewStorageArg,
+                         @Qualifier("eventDbStorage") EventStorage eventStorage) {
         filmStorage = filmStorageArg;
         userStorage = userStorageArg;
         reviewStorage = reviewStorageArg;
+        this.eventStorage = eventStorage;
     }
 
     public Review createReview(Review review) {
@@ -35,6 +41,10 @@ public class ReviewService {
         checkUserExist(review);
         Review newReview = reviewStorage.createReview(review); // создаем новый отзыв на фильм
         // добавляем новый отзыв в ленту событий
+
+        eventStorage.createEvent(Event.EntityType.REVIEW, newReview.getReviewId(),
+                Event.EventOperationType.ADD, newReview.getUserId());
+
         return newReview;
     }
 
@@ -43,6 +53,10 @@ public class ReviewService {
             checkReviewExist(review);
             Review updatedReview = reviewStorage.updateReview(review);
             // добавляем обновление отзыва в ленте событий
+
+            eventStorage.createEvent(Event.EntityType.REVIEW, updatedReview.getReviewId(),
+                    Event.EventOperationType.UPDATE, updatedReview.getUserId());
+
             return updatedReview;
         } catch (ReviewNotFoundException exc) {
             log.info("Отзыв с id={} не найден в базе данных! " +
@@ -68,6 +82,10 @@ public class ReviewService {
             Review deletedReview = reviewStorage.getReviewById(id); // получаем отзыв на фильм из БД перед удалением
             reviewStorage.deleteReviewById(id); // удаляем отзыв на фильм из БД
             // добавляем удаление отзыва в ленту событий
+
+            eventStorage.createEvent(Event.EntityType.REVIEW, deletedReview.getReviewId(),
+                    Event.EventOperationType.REMOVE, deletedReview.getUserId());
+
         } catch (ReviewNotFoundException exc) {
             log.info("Отзыв с id={} не найден в базе данных! Невозможно выполнить метод deleteReviewById", id);
             String message = String.format("Отзыв с id=%d не найден в базе данных! Невозможно выполнить операцию " +
