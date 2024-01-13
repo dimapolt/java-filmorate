@@ -21,4 +21,6 @@ public interface FilmStorage {
     Film getFilmById(Long id);
 
     List<Film> getCommonFilms(Long userId, Long friendId);
+
+    List<Film> getFilmsByParameters(String sqlQuery);
 }
