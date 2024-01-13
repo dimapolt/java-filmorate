@@ -50,7 +50,6 @@ public class UserService {
 
     public User getUserById(Long id) {
         User user = userStorage.getUserById(id);
-        FilmRateValidator.checkOnNull(user, "Пользователь с id=" + id + " не найден!");
 
         return user;
     }

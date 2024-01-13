@@ -20,6 +20,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.yandex.practicum.filmorate.utils.QueriesProvider.getQuery;
+
 @Service
 @Slf4j
 public class FilmService {
@@ -116,7 +118,7 @@ public class FilmService {
                     .filter(film -> film.getReleaseDate().getYear() == year)
                     .collect(Collectors.toList());
 
-        if (films.size() > count) {
+        if (films.size() > count && count != 0) {
             return films.subList(0, count);
         } else {
             return films;
@@ -159,6 +161,17 @@ public class FilmService {
         films.sort((f1, f2) -> f2.getLikesCount() - f1.getLikesCount());
 
         return films;
+    }
+
+    public List<Film> getFilmsByParameters(String query, String by) {
+        if (query == null || by == null) {
+            return getFilmsByLikes(0, null, null);
+        } else {
+            String sqlQuery = getQuery(query.toLowerCase(), by);
+            List<Film> films = filmStorage.getFilmsByParameters(sqlQuery);
+            films.sort(Comparator.comparing(Film::getId).reversed());
+            return films;
+        }
     }
 
 }
