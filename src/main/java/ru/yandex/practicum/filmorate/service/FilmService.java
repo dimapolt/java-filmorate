@@ -66,7 +66,7 @@ public class FilmService {
 
     public String deleteFilm(Long filmId) {
         filmStorage.deleteFilm(filmId);
-        eventStorage.deleteByEntityId(Event.EntityType.LIKE, filmId);
+        //eventStorage.deleteByEntityId(Event.EntityType.LIKE, filmId); #отключено:действие не удаляет запись ленты
 
         return "Фильм с id=" + filmId + " успешно удален!";
     }

@@ -25,5 +25,4 @@ public class EventService {
         return eventStorage.getByUserId(userId);
     }
 
-
 }
