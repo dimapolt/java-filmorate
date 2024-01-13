@@ -18,6 +18,7 @@ import ru.yandex.practicum.filmorate.utils.FilmRateValidator;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -99,12 +100,23 @@ public class FilmService {
         return "Удалена оценка от " + userId + " фильму " + filmId;
     }
 
-    public List<Film> getFilmsByLikes(Integer count) {
+    public List<Film> getFilmsByLikes(Integer count, Integer genreId, Integer year) {
         List<Film> films = filmStorage.getAllFilms();
 
         films.sort((f1, f2) -> f2.getLikesCount() - f1.getLikesCount());
 
-        if (films.size() >= count) {
+        if (genreId != null)
+            films = films.stream()
+                    .filter(film -> film.getGenres().stream()
+                            .anyMatch(genre -> genre.getId() == genreId))
+                    .collect(Collectors.toList());
+
+        if (year != null)
+            films = films.stream()
+                    .filter(film -> film.getReleaseDate().getYear() == year)
+                    .collect(Collectors.toList());
+
+        if (films.size() > count) {
             return films.subList(0, count);
         } else {
             return films;
