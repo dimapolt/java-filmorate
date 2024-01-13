@@ -46,6 +46,14 @@ public class FilmDbStorage implements FilmStorage {
 
     }
 
+    public List<Film> getLikedFilms(Long id) {
+        String sqlQuery = "SELECT l.film_id FROM likes l WHERE user_id = ?;";
+
+        return jdbcTemplate.query(sqlQuery,
+                (rs, rowNum) -> getFilmById(rs.getLong("film_id")),
+                id);
+    }
+
     @Override
     public ResponseEntity<Film> createFilm(Film film) {
         FilmRateValidator.filmValid(film);
@@ -243,7 +251,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private void setLikes(Long id, Set<Long> likes) {
-        jdbcTemplate.update("DELETE FROM likes WHERE user_id = ?", id);
+        jdbcTemplate.update("DELETE FROM likes WHERE film_id = ?", id);
         if (likes.size() > 0) {
             for (Long like : likes) {
                 String sqlQuery = "INSERT INTO likes (film_id, user_id) " +

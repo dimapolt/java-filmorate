@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.NoDataFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.utils.FilmRateValidator;
@@ -92,6 +93,13 @@ public class UserService {
         userFriendsId.forEach(uId -> commonFriends.add(userStorage.getUserById(uId)));
 
         return commonFriends;
+    }
+
+    public List<Film> returnRecommendedFilms(Long id) {
+        User user = userStorage.getUserById(id);
+        FilmRateValidator.checkOnNull(user, "Пользователь с id=" + id + " не найден!");
+
+        return userStorage.getRecommendedFilms(id);
     }
 
     private User getUserIfExist(Long id) {
