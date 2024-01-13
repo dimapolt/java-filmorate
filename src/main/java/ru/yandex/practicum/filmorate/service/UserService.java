@@ -97,7 +97,6 @@ public class UserService {
 
     public List<Film> returnRecommendedFilms(Long id) {
         User user = userStorage.getUserById(id);
-        FilmRateValidator.checkOnNull(user, "Пользователь с id=" + id + " не найден!");
 
         return userStorage.getRecommendedFilms(id);
     }

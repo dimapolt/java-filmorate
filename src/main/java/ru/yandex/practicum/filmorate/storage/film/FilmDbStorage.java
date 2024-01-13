@@ -46,12 +46,12 @@ public class FilmDbStorage implements FilmStorage {
 
     }
 
-    public List<Film> getLikedFilms(Long id) {
-        String sqlQuery = "SELECT l.film_id FROM likes l WHERE user_id = ?;";
+    @Override
+    public List<Film> getFilmsByUser(Long id) {
+        String sqlQuery = "SELECT * FROM films WHERE film_id IN " +
+                "(SELECT l.film_id FROM likes l WHERE user_id = ?);";
 
-        return jdbcTemplate.query(sqlQuery,
-                (rs, rowNum) -> getFilmById(rs.getLong("film_id")),
-                id);
+        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, id);
     }
 
     @Override
