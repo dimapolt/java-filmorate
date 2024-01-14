@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.utils.FilmRateValidator;
 
@@ -56,6 +57,10 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
+    public void deleteUser(Long id) {
+    }
+
+    @Override
     public User getUserById(Long id) {
         return users.get(id);
     }
@@ -67,5 +72,10 @@ public class InMemoryUserStorage implements UserStorage {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public List<Film> getRecommendedFilms(Long id) {
+        return null;
     }
 }
