@@ -18,6 +18,7 @@ import ru.yandex.practicum.filmorate.utils.FilmRateValidator;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.utils.QueriesProvider.getQuery;
@@ -46,10 +47,7 @@ public class FilmService {
     }
 
     public Film getFilmById(Long filmId) {
-        Film film = filmStorage.getFilmById(filmId);
-        FilmRateValidator.checkOnNull(film, "Фильм с id=" + filmId + " не найден!");
-
-        return film;
+        return filmStorage.getFilmById(filmId);
     }
 
     /**
@@ -109,7 +107,7 @@ public class FilmService {
         if (genreId != null)
             films = films.stream()
                     .filter(film -> film.getGenres().stream()
-                            .anyMatch(genre -> genre.getId() == genreId))
+                            .anyMatch(genre -> Objects.equals(genre.getId(), genreId)))
                     .collect(Collectors.toList());
 
         if (year != null)

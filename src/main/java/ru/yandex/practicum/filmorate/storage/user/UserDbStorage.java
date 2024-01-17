@@ -130,7 +130,7 @@ public class UserDbStorage implements UserStorage {
         }
 
         List<Film> recommendedFilms = new ArrayList<>(scores.keySet());
-        recommendedFilms.sort(Comparator.comparingInt(key -> scores.get(key)).reversed());
+        recommendedFilms.sort(Comparator.comparingInt(scores::get).reversed());
 
         return recommendedFilms;
     }

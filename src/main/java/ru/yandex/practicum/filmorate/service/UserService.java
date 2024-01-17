@@ -5,17 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exceptions.NoDataFoundException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.event.EventStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-import ru.yandex.practicum.filmorate.utils.FilmRateValidator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -49,16 +46,13 @@ public class UserService {
     }
 
     public User getUserById(Long id) {
-        User user = userStorage.getUserById(id);
-        FilmRateValidator.checkOnNull(user, "Пользователь с id=" + id + " не найден!");
-
-        return user;
+        return userStorage.getUserById(id);
     }
 
     public String addFriend(Long userId, Long friendId) {
 
-        User user = getUserIfExist(userId);
-        getUserIfExist(friendId); // Проверка наличия "друга" в базе
+        User user = userStorage.getUserById(userId);
+        userStorage.getUserById(friendId); // Проверка наличия "друга" в базе
 
         user.addFriend(friendId);
         userStorage.updateUser(user);
@@ -70,7 +64,9 @@ public class UserService {
     }
 
     public String removeFriend(Long userId, Long friendId) {
-        getUserIfExist(userId);
+        userStorage.getUserById(userId);
+        userStorage.getUserById(friendId);
+
         userStorage.removeFriend(userId, friendId);
         eventStorage.createEvent(Event.EntityType.FRIEND, friendId, Event.EventOperationType.REMOVE, userId);
 
@@ -103,20 +99,9 @@ public class UserService {
     }
 
     public List<Film> returnRecommendedFilms(Long id) {
-        User user = userStorage.getUserById(id);
+        userStorage.getUserById(id);
 
         return userStorage.getRecommendedFilms(id);
-    }
-
-    private User getUserIfExist(Long id) {
-        Optional<User> userO = Optional.ofNullable(userStorage.getUserById(id));
-
-        if (userO.isEmpty()) {
-            log.warn("Пользователь с id=" + id + " не найден!");
-            throw new NoDataFoundException("Пользователь с id=" + id + " не найден!");
-        } else {
-            return userO.get();
-        }
     }
 
 }

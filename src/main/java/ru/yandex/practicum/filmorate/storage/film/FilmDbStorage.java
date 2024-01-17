@@ -117,6 +117,7 @@ public class FilmDbStorage implements FilmStorage {
     public Film getFilmById(Long id) {
         String sqlQuery = "SELECT * FROM films WHERE film_id = ?";
         try {
+            log.info("Получен запрос на получения фильма");
             return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToFilm, id);
         } catch (EmptyResultDataAccessException e) {
             log.warn("Фильма с id=" + id + " нет в базе");
